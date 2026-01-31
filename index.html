@@ -7,7 +7,7 @@
 <style>
 body {
   margin: 0;
-  background: #e5e7eb;
+  background: #f3f3f3;
   font-family: Arial, sans-serif;
   display: flex;
   justify-content: center;
@@ -15,96 +15,63 @@ body {
   height: 100vh;
 }
 
-/* Mac tablet shell */
+/* Mac tablet look */
 .laptop {
-  width: 950px;
-  max-width: 95%;
-  height: 620px;
-  background: #111; /* black Mac tablet shell */
+  width: 960px;
+  height: 640px;
+  background: #000;
   border-radius: 32px;
-  padding: 12px;
-  box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+  padding: 16px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
   display: flex;
   flex-direction: column;
-  overflow: hidden;
 }
 
-/* Top bar (integrated like Mac tablet) */
 .top-bar {
   height: 36px;
-  background: #1f1f1f;
+  background: #1c1c1c;
+  border-radius: 18px 18px 0 0;
   color: #fff;
   display: flex;
   align-items: center;
   padding: 0 16px;
   font-size: 14px;
-  border-radius: 24px;
-  margin-bottom: 12px;
-  justify-content: center;
+  font-weight: bold;
 }
 
-/* Screen content */
 .screen-shell {
   flex: 1;
-  background: #fff; /* actual screen content */
-  border-radius: 24px;
+  background: #f9fafb;
+  border-radius: 0 0 28px 28px;
+  margin-top: 6px;
   padding: 22px;
   overflow-y: auto;
-  position: relative;
-}
-
-/* App launcher */
-#app-launcher {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  cursor: pointer;
-}
-#app-launcher img {
-  width: 140px;
-  height: 140px;
-  margin-bottom: 20px;
-  border-radius: 24px;
-}
-
-/* Boot UI */
-#boot {
-  background: #111;
-  color: #0f0;
-  font-family: monospace;
-  padding: 20px;
-  height: 100%;
-  overflow-y: auto;
-  display: none;
-  border-radius: 24px;
 }
 
 /* Sections */
-.section { margin-bottom: 18px; }
-.section h4 { margin: 0 0 8px; font-size: 15px; color: #111; }
+.section { margin-bottom: 20px; }
+.section h4 { margin: 0 0 8px; font-size: 15px; }
 
 /* Inputs */
-select, input, textarea {
+select, input {
   padding: 8px 10px;
-  border-radius: 12px;
+  border-radius: 8px;
   border: 1px solid #d1d5db;
   font-size: 14px;
   margin-right: 8px;
-  width: 200px;
 }
-textarea { width: 100%; resize: vertical; }
+
+input[type="text"] { width: 60%; }
 
 /* Cards */
 .card {
-  background: #f9fafb;
-  border-radius: 16px;
+  background: #ffffff;
+  border-radius: 14px;
   padding: 16px;
   border: 1px solid #e5e7eb;
   font-size: 14px;
   line-height: 1.6;
+  min-height: 60px;
 }
 
 /* Buttons */
@@ -112,20 +79,19 @@ button {
   background: #2563eb;
   border: none;
   padding: 10px 18px;
-  border-radius: 12px;
+  border-radius: 10px;
   color: #fff;
   cursor: pointer;
   font-size: 14px;
-  margin-top: 6px;
+  margin-right: 8px;
 }
 
-/* Waitlist & Feedback */
-.waitlist, .feedback {
-  background: #f3f4f6;
-  border-radius: 16px;
-  padding: 16px;
-  margin-bottom: 16px;
+/* Waitlist */
+.waitlist {
+  background: #eef2ff;
   border: 1px dashed #6366f1;
+  border-radius: 14px;
+  padding: 16px;
 }
 
 .success {
@@ -157,33 +123,36 @@ button {
   <div class="top-bar">BAINT OS — Classroom Assistant Demo</div>
   <div class="screen-shell">
 
+    <!-- WAITLIST -->
+    <div class="section waitlist">
+      <h4>🚀 Join the BAINT Waitlist</h4>
+      <p style="font-size:13px;">Human-centric AI supporting teachers and students.</p>
+      <input type="email" id="waitlistEmail" placeholder="your@email.com" />
+      <button onclick="joinWaitlist()">Join</button>
+      <div id="waitlistMessage" class="success"></div>
+    </div>
+
     <!-- APP LAUNCHER -->
-    <div id="app-launcher">
-      <img src="logo.png" alt="Baint OS Logo">
-      <h3>Click to Launch BAINT Classroom Demo</h3>
+    <div class="section" id="app-launcher">
+      <button onclick="launchDemo()">Click to Launch BAINT Classroom Demo</button>
     </div>
 
     <!-- BOOT SCREEN -->
-    <div id="boot"></div>
-
-    <!-- DEMO CONTENT -->
-    <div id="demo" style="display:none;">
-
-      <!-- WAITLIST -->
-      <div class="section waitlist">
-        <h4>🚀 Join the BAINT Waitlist</h4>
-        <input type="email" id="waitlistEmail" placeholder="your@email.com" />
-        <button onclick="joinWaitlist()">Join</button>
-        <div id="waitlistMessage" class="success"></div>
+    <div class="section" id="boot" style="display:none;">
+      <div style="background:#111;color:#0f0;font-family:monospace;height:100%;padding:20px;overflow-y:auto;">
+        <div id="boot-log"></div>
       </div>
+    </div>
 
-      <!-- ROLE & LANGUAGE -->
+    <!-- DEMO -->
+    <div id="demo" style="display:none;">
       <div class="section">
         <h4>Role & Language</h4>
         <select id="role" onchange="updateContent()">
           <option value="teacher">Teacher</option>
           <option value="student">Student</option>
         </select>
+
         <select id="language" onchange="updateContent()">
           <option value="en">English</option>
           <option value="es">Spanish</option>
@@ -192,7 +161,6 @@ button {
         </select>
       </div>
 
-      <!-- SUBJECT & TOPIC -->
       <div class="section">
         <h4>Learning Context</h4>
         <select id="subject" onchange="updateTopics(); updateContent();">
@@ -200,48 +168,68 @@ button {
           <option value="history">History</option>
           <option value="science">General Science</option>
         </select>
+
         <select id="topic" onchange="updateContent()"></select>
       </div>
 
-      <!-- GUIDED EXPLANATION -->
       <div class="section">
-        <h4>Guided Explanation</h4>
-        <div class="card" id="explanation">Select a topic to begin.</div>
+        <h4>Guided Explanation (Teacher)</h4>
+        <div class="card" id="explanation"></div>
+        <br>
         <button onclick="speak()">▶ Explain with Voice</button>
         <button onclick="stopVoice()">⏹ Stop</button>
       </div>
 
-      <!-- PROBLEM SOLVING -->
+      <div class="section">
+        <h4>Student Question</h4>
+        <input type="text" id="studentQuestion" placeholder="Ask your question..." />
+        <button onclick="answerQuestion()">Ask</button>
+        <div class="card" id="teacherReply">Teacher will reply here...</div>
+        <button onclick="speakReply()">▶ Listen Reply</button>
+      </div>
+
       <div class="section">
         <h4>What Problem Does This Solve?</h4>
         <div class="card" id="problem-solving"></div>
       </div>
-
-      <!-- FEEDBACK / QUESTIONS -->
-      <div class="section feedback">
-        <h4>💬 Ask a Question or Give Feedback</h4>
-        <textarea id="feedbackText" placeholder="Your question or feedback here..."></textarea>
-        <button onclick="sendFeedback()">Send</button>
-        <div id="feedbackMessage" class="success"></div>
-      </div>
-
     </div>
+
   </div>
 </div>
 
 <div class="subtitles" id="subtitles"></div>
 
 <script>
-// Boot sequence
+/* WAITLIST */
+function joinWaitlist() {
+  const email = document.getElementById("waitlistEmail").value.trim();
+  const msg = document.getElementById("waitlistMessage");
+  if (!email || !email.includes("@")) {
+    msg.style.color = "red";
+    msg.innerText = "Please enter a valid email.";
+    return;
+  }
+  let list = JSON.parse(localStorage.getItem("baint_waitlist")) || [];
+  list.push({ email, date: new Date().toISOString() });
+  localStorage.setItem("baint_waitlist", JSON.stringify(list));
+  window.location.href =
+    `mailto:baintcomputer@gmail.com?subject=BAINT Waitlist Signup&body=New signup: ${email}`;
+  msg.style.color = "#047857";
+  msg.innerText = "You're on the waitlist. Thanks!";
+  document.getElementById("waitlistEmail").value = "";
+}
+
+/* APP LAUNCH → BOOT → DEMO */
 const appLauncher = document.getElementById("app-launcher");
 const bootScreen = document.getElementById("boot");
 const demoScreen = document.getElementById("demo");
+const bootLog = document.getElementById("boot-log");
 
-appLauncher.addEventListener("click", () => {
+function launchDemo() {
   appLauncher.style.display = "none";
   bootScreen.style.display = "block";
   startBootSequence();
-});
+}
 
 const bootLines = [
   "Initializing BAINT OS...",
@@ -253,7 +241,7 @@ const bootLines = [
 let bootIndex = 0;
 function startBootSequence() {
   if (bootIndex < bootLines.length) {
-    bootScreen.innerHTML += bootLines[bootIndex] + "<br>";
+    bootLog.innerHTML += bootLines[bootIndex] + "<br>";
     bootIndex++;
     setTimeout(startBootSequence, 600);
   } else {
@@ -266,80 +254,103 @@ function startBootSequence() {
   }
 }
 
-// Waitlist
-function joinWaitlist() {
-  const email = document.getElementById("waitlistEmail").value.trim();
-  const msg = document.getElementById("waitlistMessage");
-  if (!email || !email.includes("@")) { msg.style.color="red"; msg.innerText="Enter valid email."; return; }
-  let list = JSON.parse(localStorage.getItem("baint_waitlist")) || [];
-  list.push({ email, date: new Date().toISOString() });
-  localStorage.setItem("baint_waitlist", JSON.stringify(list));
-  window.location.href = `mailto:baintcomputer@gmail.com?subject=BAINT Waitlist Signup&body=New signup: ${email}`;
-  msg.style.color="#047857"; msg.innerText="You're on the waitlist!";
-  document.getElementById("waitlistEmail").value="";
-}
-
-// Feedback
-function sendFeedback() {
-  const feedback = document.getElementById("feedbackText").value.trim();
-  const msg = document.getElementById("feedbackMessage");
-  if (!feedback) { msg.style.color="red"; msg.innerText="Enter a message."; return; }
-  window.location.href = `mailto:baintcomputer@gmail.com?subject=BAINT Demo Feedback&body=${encodeURIComponent(feedback)}`;
-  msg.style.color="#047857"; msg.innerText="Feedback sent!";
-  document.getElementById("feedbackText").value="";
-}
-
-// Demo Data
+/* DEMO DATA */
 const data = {
   biology: {
-    photosynthesis: { teacher:{en:"Teacher explains Photosynthesis step-by-step."}, student:{en:"Student learns Photosynthesis."} },
-    watercycle: { teacher:{en:"Teacher explains Water Cycle."}, student:{en:"Student observes Water Cycle."} }
+    photosynthesis: {
+      teacher: { en: "Teacher explains Photosynthesis step-by-step." },
+      student: { en: "Student observes Photosynthesis and learns energy conversion." }
+    },
+    watercycle: {
+      teacher: { en: "Teacher explains Water Cycle: evaporation, condensation, precipitation." },
+      student: { en: "Student observes Water Cycle and learns step-by-step." }
+    }
   },
   history: {
-    revolution: { teacher:{en:"Teacher explains French Revolution."}, student:{en:"Student observes French Revolution."} },
-    ww2: { teacher:{en:"Teacher explains WWII."}, student:{en:"Student observes WWII."} }
+    revolution: {
+      teacher: { en: "Teacher explains French Revolution: end of monarchy, rise of equality." },
+      student: { en: "Student observes French Revolution and learns the changes." }
+    }
   },
   science: {
-    states: { teacher:{en:"Teacher explains States of Matter."}, student:{en:"Student learns States of Matter."} },
-    newton: { teacher:{en:"Teacher explains Newton’s Laws."}, student:{en:"Student learns Newton’s Laws."} }
+    states: {
+      teacher: { en: "Teacher explains States of Matter: Solid, Liquid, Gas." },
+      student: { en: "Student observes States of Matter and learns step-by-step." }
+    }
   }
 };
 
-// DOM elements
 const explanationBox = document.getElementById("explanation");
-const problemCard = document.getElementById("problem-solving");
+const teacherReplyBox = document.getElementById("teacherReply");
 
-// Topics update
 function updateTopics() {
   const subject = document.getElementById("subject").value;
   const topicSelect = document.getElementById("topic");
   topicSelect.innerHTML = "";
-  Object.keys(data[subject]).forEach(t=>{
-    let o=document.createElement("option"); o.value=t; o.innerText=t.charAt(0).toUpperCase()+t.slice(1); topicSelect.appendChild(o);
+  Object.keys(data[subject]).forEach(t => {
+    let o = document.createElement("option");
+    o.value = t;
+    o.innerText = t.charAt(0).toUpperCase() + t.slice(1);
+    topicSelect.appendChild(o);
   });
 }
 
-// Update content
 function updateContent() {
-  const subject=document.getElementById("subject").value;
-  const topic=document.getElementById("topic").value;
-  const role=document.getElementById("role").value;
-  const lang=document.getElementById("language").value;
-  explanationBox.innerText=data[subject]?.[topic]?.[role]?.[lang]||"Select a topic.";
-  problemCard.innerHTML=`
-    • Understand topic step-by-step<br>
+  const subject = document.getElementById("subject").value;
+  const topic = document.getElementById("topic").value;
+  const role = document.getElementById("role").value;
+  explanationBox.innerText =
+    data[subject]?.[topic]?.[role]?.en || "Select a topic to begin.";
+  document.getElementById("problem-solving").innerHTML = `
+    • Understands topic step-by-step<br>
     • ${role==="teacher"?"Supports teaching guidance":"Observes learning clearly"}<br>
     • Reduces confusion<br>
-    • Human-centric education
+    • Human-in-control education
   `;
 }
 
-// Voice
-let utterance;
-function speak(){stopVoice(); utterance=new SpeechSynthesisUtterance(explanationBox.innerText); subtitles.innerText=explanationBox.innerText; subtitles.style.display="block"; utterance.onend=()=>subtitles.style.display="none"; speechSynthesis.speak(utterance);}
-function stopVoice(){speechSynthesis.cancel(); subtitles.style.display="none";}
+/* VOICE */
+let utterance = null;
+function speak() {
+  stopVoice();
+  utterance = new SpeechSynthesisUtterance(explanationBox.innerText);
+  subtitles.innerText = explanationBox.innerText;
+  subtitles.style.display = "block";
+  utterance.rate = 0.9;
+  utterance.onend = () => subtitles.style.display = "none";
+  speechSynthesis.speak(utterance);
+}
 
-updateTopics(); updateContent();
+function stopVoice() {
+  speechSynthesis.cancel();
+  subtitles.style.display = "none";
+}
+
+/* STUDENT QUESTION */
+function answerQuestion() {
+  const q = document.getElementById("studentQuestion").value.trim();
+  if (!q) return;
+  const reply = `Teacher replies: Based on your question "${q}", here is an explanation in a clear way.`;
+  teacherReplyBox.innerText = reply;
+  speakReply();
+  document.getElementById("studentQuestion").value = "";
+}
+
+/* TEACHER VOICE REPLY */
+function speakReply() {
+  stopVoice();
+  const text = teacherReplyBox.innerText;
+  subtitles.innerText = text;
+  subtitles.style.display = "block";
+  utterance = new SpeechSynthesisUtterance(text);
+  utterance.rate = 0.9;
+  utterance.onend = () => subtitles.style.display = "none";
+  speechSynthesis.speak(utterance);
+}
+
+/* INIT */
+updateTopics();
+updateContent();
 </script>
 </body>
 </html>
