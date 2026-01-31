@@ -7,7 +7,7 @@
 <style>
 body {
   margin: 0;
-  background: #f3f4f6;
+  background: #f3f3f3;
   font-family: Arial, sans-serif;
   display: flex;
   justify-content: center;
@@ -20,23 +20,25 @@ body {
   width: 960px;
   height: 640px;
   background: #000;
-  border-radius: 36px;
+  border-radius: 32px;
   padding: 16px;
   box-shadow: 0 20px 60px rgba(0,0,0,0.5);
   display: flex;
   flex-direction: column;
+  align-items: center;
 }
 
 .top-bar {
   height: 36px;
   background: #1c1c1c;
-  border-radius: 20px 20px 0 0;
+  border-radius: 18px 18px 0 0;
   color: #fff;
   display: flex;
   align-items: center;
   padding: 0 16px;
   font-size: 14px;
   font-weight: bold;
+  width: 100%;
 }
 
 .screen-shell {
@@ -46,6 +48,7 @@ body {
   margin-top: 6px;
   padding: 22px;
   overflow-y: auto;
+  width: 100%;
 }
 
 /* Sections */
@@ -53,19 +56,19 @@ body {
 .section h4 { margin: 0 0 8px; font-size: 15px; }
 
 /* Inputs */
-select, input, textarea {
+select, input {
   padding: 8px 10px;
-  border-radius: 10px;
+  border-radius: 8px;
   border: 1px solid #d1d5db;
   font-size: 14px;
   margin-right: 8px;
-  width: calc(100% - 20px);
 }
-textarea { resize: none; }
+
+input[type="text"], input[type="email"] { width: 60%; }
 
 /* Cards */
 .card {
-  background: #fff;
+  background: #ffffff;
   border-radius: 14px;
   padding: 16px;
   border: 1px solid #e5e7eb;
@@ -79,11 +82,11 @@ button {
   background: #2563eb;
   border: none;
   padding: 10px 18px;
-  border-radius: 12px;
+  border-radius: 10px;
   color: #fff;
   cursor: pointer;
   font-size: 14px;
-  margin-top: 6px;
+  margin-right: 8px;
 }
 
 /* Waitlist */
@@ -115,21 +118,28 @@ button {
   display: none;
   text-align: center;
 }
+
+/* Logo */
+#logo {
+  width: 160px;
+  margin-bottom: 20px;
+}
 </style>
 </head>
 
 <body>
 <div class="laptop">
   <div class="top-bar">BAINT OS — Classroom Assistant Demo</div>
-  <div class="screen-shell">
+  <div class="screen-shell" id="screen-shell">
 
-    <!-- APP LAUNCHER -->
-    <div class="section" id="app-launcher">
+    <!-- LANDING PAGE -->
+    <div id="landing">
+      <img id="logo" src="logo.png" alt="BAINT AIOPs Logo">
       <button onclick="launchDemo()">Click to Launch BAINT Classroom Demo</button>
     </div>
 
     <!-- BOOT SCREEN -->
-    <div class="section" id="boot" style="display:none;">
+    <div id="boot" style="display:none;">
       <div style="background:#111;color:#0f0;font-family:monospace;height:100%;padding:20px;overflow-y:auto;">
         <div id="boot-log"></div>
       </div>
@@ -137,16 +147,7 @@ button {
 
     <!-- DEMO -->
     <div id="demo" style="display:none;">
-
-      <!-- WAITLIST INSIDE DEMO -->
-      <div class="section waitlist">
-        <h4>🚀 Join the BAINT Waitlist</h4>
-        <p style="font-size:13px;">Human-centric AI supporting teachers and students.</p>
-        <input type="email" id="waitlistEmail" placeholder="your@email.com" />
-        <button onclick="joinWaitlist()">Join</button>
-        <div id="waitlistMessage" class="success"></div>
-      </div>
-
+      <!-- Role & Language -->
       <div class="section">
         <h4>Role & Language</h4>
         <select id="role" onchange="updateContent()">
@@ -162,6 +163,7 @@ button {
         </select>
       </div>
 
+      <!-- Learning Context -->
       <div class="section">
         <h4>Learning Context</h4>
         <select id="subject" onchange="updateTopics(); updateContent();">
@@ -173,27 +175,39 @@ button {
         <select id="topic" onchange="updateContent()"></select>
       </div>
 
+      <!-- Guided Explanation -->
       <div class="section">
         <h4>Guided Explanation (Teacher)</h4>
         <div class="card" id="explanation"></div>
+        <br>
         <button onclick="speak()">▶ Explain with Voice</button>
         <button onclick="stopVoice()">⏹ Stop</button>
       </div>
 
+      <!-- Student Question -->
       <div class="section">
         <h4>Student Question</h4>
-        <textarea id="studentQuestion" rows="3" placeholder="Ask your question..."></textarea>
+        <input type="text" id="studentQuestion" placeholder="Ask your question..." />
         <button onclick="answerQuestion()">Ask</button>
         <div class="card" id="teacherReply">Teacher will reply here...</div>
         <button onclick="speakReply()">▶ Listen Reply</button>
       </div>
 
+      <!-- Waitlist inside demo -->
+      <div class="section waitlist">
+        <h4>🚀 Join the BAINT Waitlist</h4>
+        <p style="font-size:13px;">Human-centric AI supporting teachers and students.</p>
+        <input type="email" id="waitlistEmail" placeholder="your@email.com" />
+        <button onclick="joinWaitlist()">Join</button>
+        <div id="waitlistMessage" class="success"></div>
+      </div>
+
+      <!-- Problem Solved -->
       <div class="section">
         <h4>What Problem Does This Solve?</h4>
         <div class="card" id="problem-solving"></div>
       </div>
     </div>
-
   </div>
 </div>
 
@@ -220,13 +234,13 @@ function joinWaitlist() {
 }
 
 /* APP LAUNCH → BOOT → DEMO */
-const appLauncher = document.getElementById("app-launcher");
+const landing = document.getElementById("landing");
 const bootScreen = document.getElementById("boot");
 const demoScreen = document.getElementById("demo");
 const bootLog = document.getElementById("boot-log");
 
 function launchDemo() {
-  appLauncher.style.display = "none";
+  landing.style.display = "none";
   bootScreen.style.display = "block";
   startBootSequence();
 }
@@ -282,7 +296,6 @@ const data = {
 
 const explanationBox = document.getElementById("explanation");
 const teacherReplyBox = document.getElementById("teacherReply");
-const subtitles = document.getElementById("subtitles");
 
 function updateTopics() {
   const subject = document.getElementById("subject").value;
@@ -303,7 +316,7 @@ function updateContent() {
   explanationBox.innerText =
     data[subject]?.[topic]?.[role]?.en || "Select a topic to begin.";
   document.getElementById("problem-solving").innerHTML = `
-    • Understands t usopic step-by-step<br>
+    • Understands topic step-by-step<br>
     • ${role==="teacher"?"Supports teaching guidance":"Observes learning clearly"}<br>
     • Reduces confusion<br>
     • Human-in-control education
