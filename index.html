@@ -18,14 +18,13 @@ body {
 /* Mac tablet look */
 .laptop {
   width: 960px;
-  height: 640px;
+  height: 660px;
   background: #000;
   border-radius: 32px;
   padding: 16px;
   box-shadow: 0 20px 60px rgba(0,0,0,0.5);
   display: flex;
   flex-direction: column;
-  align-items: center;
 }
 
 .top-bar {
@@ -38,7 +37,6 @@ body {
   padding: 0 16px;
   font-size: 14px;
   font-weight: bold;
-  width: 100%;
 }
 
 .screen-shell {
@@ -48,7 +46,6 @@ body {
   margin-top: 6px;
   padding: 22px;
   overflow-y: auto;
-  width: 100%;
 }
 
 /* Sections */
@@ -118,28 +115,21 @@ button {
   display: none;
   text-align: center;
 }
-
-/* Logo */
-#logo {
-  width: 160px;
-  margin-bottom: 20px;
-}
 </style>
 </head>
 
 <body>
 <div class="laptop">
   <div class="top-bar">BAINT OS — Classroom Assistant Demo</div>
-  <div class="screen-shell" id="screen-shell">
+  <div class="screen-shell">
 
-    <!-- LANDING PAGE -->
-    <div id="landing">
-      <img id="logo" src="logo.png" alt="BAINT AIOPs Logo">
+    <!-- APP LAUNCHER -->
+    <div class="section" id="app-launcher">
       <button onclick="launchDemo()">Click to Launch BAINT Classroom Demo</button>
     </div>
 
     <!-- BOOT SCREEN -->
-    <div id="boot" style="display:none;">
+    <div class="section" id="boot" style="display:none;">
       <div style="background:#111;color:#0f0;font-family:monospace;height:100%;padding:20px;overflow-y:auto;">
         <div id="boot-log"></div>
       </div>
@@ -147,7 +137,8 @@ button {
 
     <!-- DEMO -->
     <div id="demo" style="display:none;">
-      <!-- Role & Language -->
+
+      <!-- ROLE & LANGUAGE -->
       <div class="section">
         <h4>Role & Language</h4>
         <select id="role" onchange="updateContent()">
@@ -163,7 +154,7 @@ button {
         </select>
       </div>
 
-      <!-- Learning Context -->
+      <!-- LEARNING CONTEXT -->
       <div class="section">
         <h4>Learning Context</h4>
         <select id="subject" onchange="updateTopics(); updateContent();">
@@ -171,11 +162,10 @@ button {
           <option value="history">History</option>
           <option value="science">General Science</option>
         </select>
-
         <select id="topic" onchange="updateContent()"></select>
       </div>
 
-      <!-- Guided Explanation -->
+      <!-- GUIDED EXPLANATION -->
       <div class="section">
         <h4>Guided Explanation (Teacher)</h4>
         <div class="card" id="explanation"></div>
@@ -184,7 +174,7 @@ button {
         <button onclick="stopVoice()">⏹ Stop</button>
       </div>
 
-      <!-- Student Question -->
+      <!-- STUDENT QUESTION -->
       <div class="section">
         <h4>Student Question</h4>
         <input type="text" id="studentQuestion" placeholder="Ask your question..." />
@@ -193,7 +183,21 @@ button {
         <button onclick="speakReply()">▶ Listen Reply</button>
       </div>
 
-      <!-- Waitlist inside demo -->
+      <!-- DEMO FEEDBACK -->
+      <div class="section">
+        <h4>💬 Demo Feedback</h4>
+        <input type="text" id="demoFeedbackInput" placeholder="Share your thoughts..." />
+        <button onclick="submitFeedback()">Submit</button>
+        <div class="card" id="feedbackDisplay">Feedback from users will appear here.</div>
+      </div>
+
+      <!-- PROBLEM SOLVING -->
+      <div class="section">
+        <h4>What Problem Does This Solve?</h4>
+        <div class="card" id="problem-solving"></div>
+      </div>
+
+      <!-- WAITLIST -->
       <div class="section waitlist">
         <h4>🚀 Join the BAINT Waitlist</h4>
         <p style="font-size:13px;">Human-centric AI supporting teachers and students.</p>
@@ -202,45 +206,22 @@ button {
         <div id="waitlistMessage" class="success"></div>
       </div>
 
-      <!-- Problem Solved -->
-      <div class="section">
-        <h4>What Problem Does This Solve?</h4>
-        <div class="card" id="problem-solving"></div>
-      </div>
     </div>
+
   </div>
 </div>
 
 <div class="subtitles" id="subtitles"></div>
 
 <script>
-/* WAITLIST */
-function joinWaitlist() {
-  const email = document.getElementById("waitlistEmail").value.trim();
-  const msg = document.getElementById("waitlistMessage");
-  if (!email || !email.includes("@")) {
-    msg.style.color = "red";
-    msg.innerText = "Please enter a valid email.";
-    return;
-  }
-  let list = JSON.parse(localStorage.getItem("baint_waitlist")) || [];
-  list.push({ email, date: new Date().toISOString() });
-  localStorage.setItem("baint_waitlist", JSON.stringify(list));
-  window.location.href =
-    `mailto:baintcomputer@gmail.com?subject=BAINT Waitlist Signup&body=New signup: ${email}`;
-  msg.style.color = "#047857";
-  msg.innerText = "You're on the waitlist. Thanks!";
-  document.getElementById("waitlistEmail").value = "";
-}
-
 /* APP LAUNCH → BOOT → DEMO */
-const landing = document.getElementById("landing");
+const appLauncher = document.getElementById("app-launcher");
 const bootScreen = document.getElementById("boot");
 const demoScreen = document.getElementById("demo");
 const bootLog = document.getElementById("boot-log");
 
 function launchDemo() {
-  landing.style.display = "none";
+  appLauncher.style.display = "none";
   bootScreen.style.display = "block";
   startBootSequence();
 }
@@ -296,6 +277,7 @@ const data = {
 
 const explanationBox = document.getElementById("explanation");
 const teacherReplyBox = document.getElementById("teacherReply");
+const feedbackDisplay = document.getElementById("feedbackDisplay");
 
 function updateTopics() {
   const subject = document.getElementById("subject").value;
@@ -344,7 +326,7 @@ function stopVoice() {
 function answerQuestion() {
   const q = document.getElementById("studentQuestion").value.trim();
   if (!q) return;
-  const reply = `Teacher replies: Based on your question "${q}", here is an explanation in a clear way.`;
+  const reply = `Teacher replies: Based on your question "${q}", here's an explanation in a clear way.`;
   teacherReplyBox.innerText = reply;
   speakReply();
   document.getElementById("studentQuestion").value = "";
@@ -359,6 +341,43 @@ function speakReply() {
   utterance.rate = 0.9;
   utterance.onend = () => subtitles.style.display = "none";
   speechSynthesis.speak(utterance);
+}
+
+/* DEMO FEEDBACK */
+function submitFeedback() {
+  const feedbackInput = document.getElementById("demoFeedbackInput");
+  const feedback = feedbackInput.value.trim();
+  if (!feedback) return;
+
+  let feedbackList = JSON.parse(localStorage.getItem("baint_feedback")) || [];
+  feedbackList.push({ feedback, date: new Date().toISOString() });
+  localStorage.setItem("baint_feedback", JSON.stringify(feedbackList));
+
+  feedbackDisplay.innerHTML = feedbackList.map(f => `• ${f.feedback}`).join("<br>");
+
+  // Optionally send via email
+  window.location.href = `mailto:baintcomputer@gmail.com?subject=BAINT Demo Feedback&body=${encodeURIComponent(feedback)}`;
+
+  feedbackInput.value = "";
+}
+
+/* WAITLIST */
+function joinWaitlist() {
+  const email = document.getElementById("waitlistEmail").value.trim();
+  const msg = document.getElementById("waitlistMessage");
+  if (!email || !email.includes("@")) {
+    msg.style.color = "red";
+    msg.innerText = "Please enter a valid email.";
+    return;
+  }
+  let list = JSON.parse(localStorage.getItem("baint_waitlist")) || [];
+  list.push({ email, date: new Date().toISOString() });
+  localStorage.setItem("baint_waitlist", JSON.stringify(list));
+  window.location.href =
+    `mailto:baintcomputer@gmail.com?subject=BAINT Waitlist Signup&body=New signup: ${email}`;
+  msg.style.color = "#047857";
+  msg.innerText = "You're on the waitlist. Thanks!";
+  document.getElementById("waitlistEmail").value = "";
 }
 
 /* INIT */
