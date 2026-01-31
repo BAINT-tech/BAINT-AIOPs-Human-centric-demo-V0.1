@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>BAINT OS – Classroom Assistant Demo</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body {
+  margin: 0;
+  background: #fff;
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.laptop {
+  width: 940px;
+  height: 620px;
+  background: rgba(0,0,0,0.92);
+  border-radius: 18px;
+  padding: 16px;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+  display: flex;
+  flex-direction: column;
+}
+
+.top-bar {
+  height: 32px;
+  background: #1f1f1f;
+  border-radius: 12px 12px 0 0;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  font-size: 14px;
+}
+
+.screen-shell {
+  flex: 1;
+  background: #f9fafb;
+  border-radius: 0 0 14px 14px;
+  margin-top: 6px;
+  padding: 22px;
+  overflow-y: auto;
+}
+
+.section { margin-bottom: 18px; }
+.section h4 { margin: 0 0 8px; font-size: 15px; }
+
+select, input {
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-size: 14px;
+  margin-right: 8px;
+}
+
+.card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+button {
+  background: #2563eb;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 10px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.waitlist {
+  background: #eef2ff;
+  border: 1px dashed #6366f1;
+  border-radius: 14px;
+  padding: 16px;
+}
+
+.success {
+  color: #047857;
+  font-size: 13px;
+  margin-top: 8px;
+}
+</style>
+</head>
+
+<body>
+<div class="laptop">
+  <div class="top-bar">BAINT OS — Classroom Assistant Demo</div>
+  <div class="screen-shell">
+
+    <!-- WAITLIST -->
+    <div class="section waitlist">
+      <h4>🚀 Join the BAINT Waitlist</h4>
+      <p style="font-size:13px;">
+        Human-centric, on-device AI that supports teachers and students.
+      </p>
+      <input type="email" id="waitlistEmail" placeholder="your@email.com" />
+      <button onclick="joinWaitlist()">Join</button>
+      <div id="waitlistMessage" class="success"></div>
+    </div>
+
+    <!-- DEMO CONTENT -->
+    <div class="section">
+      <h4>Role & Language</h4>
+      <select id="role" onchange="updateContent()">
+        <option value="teacher">Teacher</option>
+        <option value="student">Student</option>
+      </select>
+
+      <select id="language" onchange="updateContent()">
+        <option value="en">English</option>
+        <option value="es">Spanish</option>
+        <option value="zh">Chinese</option>
+        <option value="fr">French</option>
+      </select>
+    </div>
+
+    <div class="section">
+      <h4>Learning Context</h4>
+      <select id="subject" onchange="updateTopics(); updateContent();">
+        <option value="biology">Biology</option>
+        <option value="history">History</option>
+        <option value="science">General Science</option>
+      </select>
+
+      <select id="topic" onchange="updateContent()"></select>
+    </div>
+
+    <div class="section">
+      <h4>Guided Explanation</h4>
+      <div class="card" id="explanation"></div>
+      <br>
+      <button onclick="speak()">▶ Explain with Voice</button>
+      <button onclick="stopVoice()">⏹ Stop</button>
+    </div>
+
+    <div class="section">
+      <h4>What Problem Does This Solve?</h4>
+      <div class="card" id="problem-solving"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+/* WAITLIST LOGIC */
+function joinWaitlist() {
+  const email = document.getElementById("waitlistEmail").value.trim();
+  const msg = document.getElementById("waitlistMessage");
+
+  if (!email || !email.includes("@")) {
+    msg.style.color = "red";
+    msg.innerText = "Please enter a valid email.";
+    return;
+  }
+
+  let list = JSON.parse(localStorage.getItem("baint_waitlist")) || [];
+  list.push({ email, date: new Date().toISOString() });
+  localStorage.setItem("baint_waitlist", JSON.stringify(list));
+
+  window.location.href =
+    `mailto:baintcomputer@gmail.com?subject=BAINT Waitlist Signup&body=New signup: ${email}`;
+
+  msg.style.color = "#047857";
+  msg.innerText = "You're on the waitlist. Thanks for supporting human-centric AI!";
+  document.getElementById("waitlistEmail").value = "";
+}
+
+/* DEMO DATA */
+const data = {
+  biology: {
+    photosynthesis: {
+      teacher: { en: "Teacher explains Photosynthesis step-by-step." },
+      student: { en: "Student learns how plants convert sunlight into energy." }
+    }
+  }
+};
+
+const explanationBox = document.getElementById("explanation");
+
+function updateTopics() {
+  const subject = document.getElementById("subject").value;
+  const topicSelect = document.getElementById("topic");
+  topicSelect.innerHTML = "";
+  Object.keys(data[subject]).forEach(t => {
+    let o = document.createElement("option");
+    o.value = t;
+    o.innerText = t;
+    topicSelect.appendChild(o);
+  });
+}
+
+function updateContent() {
+  const subject = document.getElementById("subject").value;
+  const topic = document.getElementById("topic").value;
+  const role = document.getElementById("role").value;
+  explanationBox.innerText =
+    data[subject]?.[topic]?.[role]?.en || "Select a topic to begin.";
+}
+
+updateTopics();
+updateContent();
+
+/* VOICE */
+let utterance;
+function speak() {
+  stopVoice();
+  utterance = new SpeechSynthesisUtterance(explanationBox.innerText);
+  speechSynthesis.speak(utterance);
+}
+function stopVoice() {
+  speechSynthesis.cancel();
+}
+</script>
+</body>
+</html>
