@@ -123,15 +123,6 @@ button {
   <div class="top-bar">BAINT OS — Classroom Assistant Demo</div>
   <div class="screen-shell">
 
-    <!-- WAITLIST -->
-    <div class="section waitlist">
-      <h4>🚀 Join the BAINT Waitlist</h4>
-      <p style="font-size:13px;">Human-centric AI supporting teachers and students.</p>
-      <input type="email" id="waitlistEmail" placeholder="your@email.com" />
-      <button onclick="joinWaitlist()">Join</button>
-      <div id="waitlistMessage" class="success"></div>
-    </div>
-
     <!-- APP LAUNCHER -->
     <div class="section" id="app-launcher">
       <button onclick="launchDemo()">Click to Launch BAINT Classroom Demo</button>
@@ -146,6 +137,16 @@ button {
 
     <!-- DEMO -->
     <div id="demo" style="display:none;">
+
+      <!-- WAITLIST INSIDE DEMO -->
+      <div class="section waitlist">
+        <h4>🚀 Join the BAINT Waitlist</h4>
+        <p style="font-size:13px;">Human-centric AI supporting teachers and students.</p>
+        <input type="email" id="waitlistEmail" placeholder="your@email.com" />
+        <button onclick="joinWaitlist()">Join</button>
+        <div id="waitlistMessage" class="success"></div>
+      </div>
+
       <div class="section">
         <h4>Role & Language</h4>
         <select id="role" onchange="updateContent()">
@@ -225,9 +226,7 @@ const demoScreen = document.getElementById("demo");
 const bootLog = document.getElementById("boot-log");
 
 function launchDemo() {
-  // Hide launcher button
   appLauncher.style.display = "none";
-  // Show boot screen
   bootScreen.style.display = "block";
   startBootSequence();
 }
@@ -304,7 +303,7 @@ function updateContent() {
   explanationBox.innerText =
     data[subject]?.[topic]?.[role]?.en || "Select a topic to begin.";
   document.getElementById("problem-solving").innerHTML = `
-    • Understands topic step-by-step<br>
+    • Understands t usopic step-by-step<br>
     • ${role==="teacher"?"Supports teaching guidance":"Observes learning clearly"}<br>
     • Reduces confusion<br>
     • Human-in-control education
