@@ -7,27 +7,30 @@
 <style>
 body {
   margin: 0;
-  background: #fff;
+  background: #f3f4f6;
   font-family: Arial, sans-serif;
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
+  height: 100vh;
 }
 
+/* Laptop / Demo shell */
 .laptop {
-  width: 940px;
-  background: rgba(0,0,0,0.92);
+  width: 960px;
+  max-width: 95%;
+  background: #ffffff;
   border-radius: 18px;
   padding: 16px;
-  box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+  box-shadow: 0 25px 60px rgba(0,0,0,0.35);
   display: flex;
   flex-direction: column;
 }
 
+/* Top bar */
 .top-bar {
   height: 32px;
-  background: #1f1f1f;
+  background: #1f2937;
   border-radius: 12px 12px 0 0;
   color: #fff;
   display: flex;
@@ -36,6 +39,7 @@ body {
   font-size: 14px;
 }
 
+/* Screen area */
 .screen-shell {
   flex: 1;
   background: #f9fafb;
@@ -43,21 +47,54 @@ body {
   margin-top: 6px;
   padding: 22px;
   overflow-y: auto;
+  position: relative;
 }
 
-.section { margin-bottom: 18px; }
-.section h4 { margin: 0 0 8px; font-size: 15px; }
+/* App launcher */
+#app-launcher {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  cursor: pointer;
+}
+#app-launcher img {
+  width: 120px;
+  height: 120px;
+  margin-bottom: 20px;
+}
 
+/* Boot UI */
+#boot {
+  background: #111;
+  color: #0f0;
+  font-family: monospace;
+  padding: 20px;
+  height: 100%;
+  overflow-y: auto;
+  display: none;
+  border-radius: 12px;
+}
+
+/* Sections */
+.section { margin-bottom: 18px; }
+.section h4 { margin: 0 0 8px; font-size: 15px; color: #111; }
+
+/* Inputs */
 select, input, textarea {
   padding: 8px 10px;
   border-radius: 8px;
   border: 1px solid #d1d5db;
   font-size: 14px;
   margin-right: 8px;
+  width: 200px;
 }
 
 textarea { width: 100%; resize: vertical; }
 
+/* Cards */
 .card {
   background: #ffffff;
   border-radius: 14px;
@@ -67,6 +104,7 @@ textarea { width: 100%; resize: vertical; }
   line-height: 1.6;
 }
 
+/* Buttons */
 button {
   background: #2563eb;
   border: none;
@@ -78,88 +116,163 @@ button {
   margin-top: 6px;
 }
 
-.waitlist, .feedback {
+/* Waitlist */
+.waitlist {
   background: #eef2ff;
   border: 1px dashed #6366f1;
   border-radius: 14px;
   padding: 16px;
-  margin-bottom: 18px;
 }
 
+/* Feedback */
+.feedback {
+  background: #fef3c7;
+  border: 1px dashed #f59e0b;
+  border-radius: 14px;
+  padding: 16px;
+}
+
+/* Success messages */
 .success {
   color: #047857;
   font-size: 13px;
   margin-top: 8px;
 }
+
+/* Subtitles for voice */
+.subtitles {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  background: rgba(0,0,0,0.8);
+  color: #fff;
+  padding: 12px;
+  border-radius: 12px;
+  font-size: 13px;
+  display: none;
+  text-align: center;
+}
 </style>
 </head>
+
 <body>
 <div class="laptop">
   <div class="top-bar">BAINT OS — Classroom Assistant Demo</div>
   <div class="screen-shell">
 
-    <!-- WAITLIST -->
-    <div class="section waitlist">
-      <h4>🚀 Join the BAINT Waitlist</h4>
-      <p style="font-size:13px;">Human-centric, on-device AI supporting teachers & students.</p>
-      <input type="email" id="waitlistEmail" placeholder="your@email.com" />
-      <button onclick="joinWaitlist()">Join</button>
-      <div id="waitlistMessage" class="success"></div>
+    <!-- APP LAUNCHER -->
+    <div id="app-launcher">
+      <img src="logo.png" alt="Baint OS Logo">
+      <h3>Click to Launch BAINT Classroom Demo</h3>
     </div>
 
-    <!-- FEEDBACK / QUESTION -->
-    <div class="section feedback">
-      <h4>💬 Ask a Question / Leave Feedback</h4>
-      <textarea id="feedbackText" rows="3" placeholder="Type your question or feedback..."></textarea>
-      <button onclick="sendFeedback()">Send</button>
-      <div id="feedbackMessage" class="success"></div>
-    </div>
+    <!-- BOOT SCREEN -->
+    <div id="boot"></div>
 
     <!-- DEMO CONTENT -->
-    <div class="section">
-      <h4>Role & Language</h4>
-      <select id="role" onchange="updateContent()">
-        <option value="teacher">Teacher</option>
-        <option value="student">Student</option>
-      </select>
+    <div id="demo" style="display:none;">
 
-      <select id="language" onchange="updateContent()">
-        <option value="en">English</option>
-        <option value="es">Spanish</option>
-        <option value="zh">Chinese</option>
-        <option value="fr">French</option>
-      </select>
+      <!-- WAITLIST -->
+      <div class="section waitlist">
+        <h4>🚀 Join the BAINT Waitlist</h4>
+        <input type="email" id="waitlistEmail" placeholder="your@email.com" />
+        <button onclick="joinWaitlist()">Join</button>
+        <div id="waitlistMessage" class="success"></div>
+      </div>
+
+      <!-- ROLE & LANGUAGE -->
+      <div class="section">
+        <h4>Role & Language</h4>
+        <select id="role" onchange="updateContent()">
+          <option value="teacher">Teacher</option>
+          <option value="student">Student</option>
+        </select>
+        <select id="language" onchange="updateContent()">
+          <option value="en">English</option>
+          <option value="es">Spanish</option>
+          <option value="zh">Chinese</option>
+          <option value="fr">French</option>
+        </select>
+      </div>
+
+      <!-- SUBJECT & TOPIC -->
+      <div class="section">
+        <h4>Learning Context</h4>
+        <select id="subject" onchange="updateTopics(); updateContent();">
+          <option value="biology">Biology</option>
+          <option value="history">History</option>
+          <option value="science">General Science</option>
+        </select>
+        <select id="topic" onchange="updateContent()"></select>
+      </div>
+
+      <!-- GUIDED EXPLANATION -->
+      <div class="section">
+        <h4>Guided Explanation</h4>
+        <div class="card" id="explanation">Select a topic to begin.</div>
+        <button onclick="speak()">▶ Explain with Voice</button>
+        <button onclick="stopVoice()">⏹ Stop</button>
+      </div>
+
+      <!-- PROBLEM SOLVING -->
+      <div class="section">
+        <h4>What Problem Does This Solve?</h4>
+        <div class="card" id="problem-solving"></div>
+      </div>
+
+      <!-- FEEDBACK / QUESTIONS -->
+      <div class="section feedback">
+        <h4>💬 Ask a Question or Give Feedback</h4>
+        <textarea id="feedbackText" placeholder="Your question or feedback here..."></textarea>
+        <button onclick="sendFeedback()">Send</button>
+        <div id="feedbackMessage" class="success"></div>
+      </div>
+
     </div>
-
-    <div class="section">
-      <h4>Learning Context</h4>
-      <select id="subject" onchange="updateTopics(); updateContent();">
-        <option value="biology">Biology</option>
-        <option value="history">History</option>
-        <option value="science">General Science</option>
-      </select>
-
-      <select id="topic" onchange="updateContent()"></select>
-    </div>
-
-    <div class="section">
-      <h4>Guided Explanation</h4>
-      <div class="card" id="explanation"></div>
-      <br>
-      <button onclick="speak()">▶ Explain with Voice</button>
-      <button onclick="stopVoice()">⏹ Stop</button>
-    </div>
-
-    <div class="section">
-      <h4>What Problem Does This Solve?</h4>
-      <div class="card" id="problem-solving"></div>
-    </div>
-
   </div>
 </div>
 
+<div class="subtitles" id="subtitles"></div>
+
 <script>
-/* WAITLIST LOGIC */
+// App Launcher → Boot → Demo
+const appLauncher = document.getElementById("app-launcher");
+const bootScreen = document.getElementById("boot");
+const demoScreen = document.getElementById("demo");
+
+appLauncher.addEventListener("click", () => {
+  appLauncher.style.display = "none";
+  bootScreen.style.display = "block";
+  startBootSequence();
+});
+
+// Boot sequence
+const bootLines = [
+  "Initializing BAINT OS...",
+  "Loading Human-Centric AI modules...",
+  "Activating Classroom Assistant...",
+  "System ready!"
+];
+
+let bootIndex = 0;
+function startBootSequence() {
+  if (bootIndex < bootLines.length) {
+    bootScreen.innerHTML += bootLines[bootIndex] + "<br>";
+    bootIndex++;
+    setTimeout(startBootSequence, 600);
+  } else {
+    setTimeout(() => {
+      bootScreen.style.display = "none";
+      demoScreen.style.display = "block";
+      updateTopics();
+      updateContent();
+    }, 800);
+  }
+}
+
+// Waitlist
 function joinWaitlist() {
   const email = document.getElementById("waitlistEmail").value.trim();
   const msg = document.getElementById("waitlistMessage");
@@ -178,34 +291,29 @@ function joinWaitlist() {
     `mailto:baintcomputer@gmail.com?subject=BAINT Waitlist Signup&body=New signup: ${email}`;
 
   msg.style.color = "#047857";
-  msg.innerText = "You're on the waitlist! Thanks for supporting human-centric AI.";
+  msg.innerText = "You're on the waitlist! Thanks for supporting BAINT AIOPs.";
   document.getElementById("waitlistEmail").value = "";
 }
 
-/* FEEDBACK LOGIC */
+// Feedback / Questions
 function sendFeedback() {
-  const text = document.getElementById("feedbackText").value.trim();
+  const feedback = document.getElementById("feedbackText").value.trim();
   const msg = document.getElementById("feedbackMessage");
-
-  if (!text) {
+  if (!feedback) {
     msg.style.color = "red";
-    msg.innerText = "Please enter a question or feedback.";
+    msg.innerText = "Please enter a message.";
     return;
   }
 
-  let list = JSON.parse(localStorage.getItem("baint_feedback")) || [];
-  list.push({ text, date: new Date().toISOString() });
-  localStorage.setItem("baint_feedback", JSON.stringify(list));
-
   window.location.href =
-    `mailto:baintcomputer@gmail.com?subject=BAINT Feedback&body=Feedback: ${text}`;
+    `mailto:baintcomputer@gmail.com?subject=BAINT Demo Feedback&body=${encodeURIComponent(feedback)}`;
 
   msg.style.color = "#047857";
-  msg.innerText = "Thanks for your feedback! We'll read it soon.";
+  msg.innerText = "Feedback sent! Thanks for sharing your thoughts.";
   document.getElementById("feedbackText").value = "";
 }
 
-/* DEMO DATA */
+// Demo Data
 const data = {
   biology: {
     photosynthesis: {
@@ -213,27 +321,37 @@ const data = {
       student: { en: "Student learns how plants convert sunlight into energy." }
     },
     watercycle: {
-      teacher: { en: "Teacher explains Water Cycle step-by-step." },
-      student: { en: "Student observes evaporation, condensation, precipitation." }
+      teacher: { en: "Teacher explains Water Cycle: Evaporation, Condensation, Precipitation." },
+      student: { en: "Student observes Water Cycle: Evaporation, Condensation, Precipitation." }
     }
   },
   history: {
     revolution: {
-      teacher: { en: "Teacher explains French Revolution." },
-      student: { en: "Student learns about end of monarchy & rise of equality." }
+      teacher: { en: "Teacher explains French Revolution: End of monarchy, political reform." },
+      student: { en: "Student observes French Revolution: Monarchy ends, equality rises." }
+    },
+    ww2: {
+      teacher: { en: "Teacher explains WWII: Major battles, political changes." },
+      student: { en: "Student observes WWII: Global conflict, learn history." }
     }
   },
   science: {
     states: {
-      teacher: { en: "Teacher explains States of Matter." },
-      student: { en: "Student observes solids, liquids, gases." }
+      teacher: { en: "Teacher explains States of Matter: Solid, Liquid, Gas." },
+      student: { en: "Student learns States of Matter step-by-step." }
+    },
+    newton: {
+      teacher: { en: "Teacher explains Newton’s Laws: Inertia, Force, Action-Reaction." },
+      student: { en: "Student learns Newton’s Laws via examples." }
     }
   }
 };
 
+// DOM Elements
 const explanationBox = document.getElementById("explanation");
-const problemBox = document.getElementById("problem-solving");
+const problemCard = document.getElementById("problem-solving");
 
+// Update Topics
 function updateTopics() {
   const subject = document.getElementById("subject").value;
   const topicSelect = document.getElementById("topic");
@@ -246,35 +364,37 @@ function updateTopics() {
   });
 }
 
+// Update content
 function updateContent() {
   const subject = document.getElementById("subject").value;
   const topic = document.getElementById("topic").value;
   const role = document.getElementById("role").value;
   const lang = document.getElementById("language").value;
 
-  const text = data[subject]?.[topic]?.[role]?.[lang] || "Select a topic to begin.";
-  explanationBox.innerText = text;
-
-  problemBox.innerHTML = `
+  explanationBox.innerText = data[subject]?.[topic]?.[role]?.[lang] || "Select a topic to begin.";
+  problemCard.innerHTML = `
     • Understand topic step-by-step<br>
     • ${role === "teacher" ? "Supports teaching guidance" : "Observes learning clearly"}<br>
-    • Reduces confusion and cognitive overload<br>
-    • Human-in-control education
+    • Reduces confusion<br>
+    • Human-centric education
   `;
 }
 
-/* VOICE */
+// Voice
 let utterance;
 function speak() {
   stopVoice();
   utterance = new SpeechSynthesisUtterance(explanationBox.innerText);
+  subtitles.innerText = explanationBox.innerText;
+  subtitles.style.display = "block";
+  utterance.onend = () => subtitles.style.display = "none";
   speechSynthesis.speak(utterance);
 }
 function stopVoice() {
   speechSynthesis.cancel();
+  subtitles.style.display = "none";
 }
 
-/* INIT */
 updateTopics();
 updateContent();
 </script>
