@@ -225,7 +225,9 @@ const demoScreen = document.getElementById("demo");
 const bootLog = document.getElementById("boot-log");
 
 function launchDemo() {
+  // Hide launcher button
   appLauncher.style.display = "none";
+  // Show boot screen
   bootScreen.style.display = "block";
   startBootSequence();
 }
