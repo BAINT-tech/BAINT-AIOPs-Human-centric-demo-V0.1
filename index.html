@@ -14,6 +14,8 @@ body {
   align-items: center;
   height: 100vh;
 }
+
+/* Mac tablet look */
 .laptop {
   width: 960px;
   height: 640px;
@@ -24,6 +26,7 @@ body {
   display: flex;
   flex-direction: column;
 }
+
 .top-bar {
   height: 36px;
   background: #1c1c1c;
@@ -35,6 +38,7 @@ body {
   font-size: 14px;
   font-weight: bold;
 }
+
 .screen-shell {
   flex: 1;
   background: #f9fafb;
@@ -43,8 +47,12 @@ body {
   padding: 22px;
   overflow-y: auto;
 }
+
+/* Sections */
 .section { margin-bottom: 20px; }
 .section h4 { margin: 0 0 8px; font-size: 15px; }
+
+/* Inputs */
 select, input {
   padding: 8px 10px;
   border-radius: 8px;
@@ -52,7 +60,10 @@ select, input {
   font-size: 14px;
   margin-right: 8px;
 }
+
 input[type="text"], input[type="email"] { width: 60%; }
+
+/* Cards */
 .card {
   background: #ffffff;
   border-radius: 14px;
@@ -62,6 +73,8 @@ input[type="text"], input[type="email"] { width: 60%; }
   line-height: 1.6;
   min-height: 60px;
 }
+
+/* Buttons */
 button {
   background: #2563eb;
   border: none;
@@ -72,17 +85,22 @@ button {
   font-size: 14px;
   margin-top: 6px;
 }
+
+/* Waitlist */
 .waitlist {
   background: #eef2ff;
   border: 1px dashed #6366f1;
   border-radius: 14px;
   padding: 16px;
 }
+
 .success {
   color: #047857;
   font-size: 13px;
   margin-top: 8px;
 }
+
+/* Subtitles for voice */
 .subtitles {
   position: fixed;
   bottom: 20px;
@@ -97,14 +115,10 @@ button {
   display: none;
   text-align: center;
 }
-.mic-button {
-  margin-left: 6px;
-  cursor: pointer;
-  font-size: 16px;
-}
 </style>
 </head>
 <body>
+
 <div class="laptop">
   <div class="top-bar">BAINT OS — Classroom Assistant Demo</div>
   <div class="screen-shell">
@@ -134,8 +148,8 @@ button {
         <select id="language" onchange="updateContent()">
           <option value="en">English</option>
           <option value="es">Spanish</option>
-          <option value="zh">Chinese</option>
           <option value="fr">French</option>
+          <option value="zh">Chinese</option>
         </select>
       </div>
 
@@ -146,6 +160,7 @@ button {
           <option value="history">History</option>
           <option value="science">General Science</option>
         </select>
+
         <select id="topic" onchange="updateContent()"></select>
       </div>
 
@@ -160,10 +175,10 @@ button {
       <div class="section">
         <h4>Student Question</h4>
         <input type="text" id="studentQuestion" placeholder="Ask your question..." />
-        <span class="mic-button" onclick="answerQuestion()">🎙️</span>
         <button onclick="answerQuestion()">Ask</button>
+        <button id="micButton" onclick="startMic()">🎙️</button>
         <div class="card" id="teacherReply">Teacher will reply here...</div>
-        <button onclick="speakReply()">▶ Listen Teacher Voice</button>
+        <button onclick="speakReply()">▶ Listen Reply</button>
       </div>
 
       <div class="section">
@@ -233,48 +248,44 @@ function startBootSequence() {
 const data = {
   biology: {
     photosynthesis: {
+      definition: "Photosynthesis is the process by which green plants convert sunlight into energy.",
       teacher: {
-        en: "Photosynthesis is how plants make food using sunlight, water, and CO2. Step-by-step: 1) Plants absorb sunlight. 2) Take in water and CO2. 3) Convert them into glucose and oxygen. 4) Glucose provides energy; oxygen is released.",
-        es: "La fotosíntesis es cómo las plantas producen alimento usando luz solar, agua y CO2. Paso a paso: 1) Las plantas absorben luz. 2) Toman agua y CO2. 3) Lo convierten en glucosa y oxígeno. 4) La glucosa da energía; se libera oxígeno.",
-        zh: "光合作用是植物利用阳光、水和二氧化碳制造食物的过程。步骤：1）吸收阳光。2）吸收水和二氧化碳。3）转化为葡萄糖和氧气。4）葡萄糖提供能量，释放氧气。",
-        fr: "La photosynthèse est comment les plantes produisent de la nourriture avec la lumière, l'eau et le CO2. Étapes : 1) Absorption de la lumière. 2) Prendre l'eau et le CO2. 3) Convertir en glucose et oxygène. 4) Le glucose fournit de l'énergie ; l'oxygène est libéré."
-      },
-      student: { en: "Student learns step by step how plants make energy from sunlight." },
-      sampleQ: "Why do plants need sunlight?"
+        en: "Teacher explains Photosynthesis step-by-step: sunlight absorbed → water & CO₂ → glucose & O₂.",
+        es: "El profesor explica la fotosíntesis paso a paso: absorción de luz solar → agua y CO₂ → glucosa y O₂.",
+        fr: "L'enseignant explique la photosynthèse étape par étape : lumière absorbée → eau et CO₂ → glucose et O₂.",
+        zh: "老师逐步解释光合作用：吸收阳光 → 水和二氧化碳 → 葡萄糖和氧气。"
+      }
     },
     watercycle: {
+      definition: "The water cycle describes how water evaporates, condenses, and precipitates on Earth.",
       teacher: {
-        en: "The Water Cycle moves water continuously: 1) Evaporation 2) Condensation 3) Precipitation 4) Collection. Step-by-step explanation ensures students understand each stage.",
-        es: "El ciclo del agua mueve el agua continuamente: 1) Evaporación 2) Condensación 3) Precipitación 4) Recolección. Explicación paso a paso ayuda a entender cada etapa.",
-        zh: "水循环不断移动水：1）蒸发 2）凝结 3）降水 4）收集。逐步讲解帮助学生理解每个阶段。",
-        fr: "Le cycle de l'eau déplace continuellement l'eau : 1) Évaporation 2) Condensation 3) Précipitation 4) Collecte. Explication étape par étape."
-      },
-      student: { en: "Student observes the water cycle stage by stage." },
-      sampleQ: "How does rain form?"
+        en: "Teacher explains Water Cycle: evaporation → condensation → precipitation.",
+        es: "El profesor explica el ciclo del agua: evaporación → condensación → precipitación.",
+        fr: "L'enseignant explique le cycle de l'eau : évaporation → condensation → précipitation.",
+        zh: "老师解释水循环：蒸发 → 凝结 → 降水。"
+      }
     }
   },
   history: {
     revolution: {
+      definition: "A revolution is a fundamental change in political power or organizational structures.",
       teacher: {
-        en: "The French Revolution was a major political change. Step-by-step: 1) People unhappy with monarchy 2) Protests and revolts 3) Monarchy falls, equality rises 4) New laws and reforms.",
-        es: "La Revolución Francesa fue un gran cambio político. Paso a paso: 1) Descontento con la monarquía 2) Protestas y revueltas 3) Monarquía cae, aumenta la igualdad 4) Nuevas leyes y reformas.",
-        zh: "法国大革命是重大政治变革。步骤：1）人民不满君主制 2）抗议和暴动 3）君主制倒台，平等兴起 4）新法律和改革。",
-        fr: "La Révolution française fut un grand changement politique. Étapes : 1) Mécontentement 2) Protestations 3) Chute de la monarchie 4) Nouvelles lois et réformes."
-      },
-      student: { en: "Student learns causes and results of French Revolution step by step." },
-      sampleQ: "What caused the French Revolution?"
+        en: "Teacher explains French Revolution: end of monarchy → rise of equality.",
+        es: "El profesor explica la Revolución Francesa: fin de la monarquía → ascenso de la igualdad.",
+        fr: "L'enseignant explique la Révolution française : fin de la monarchie → montée de l'égalité.",
+        zh: "老师解释法国大革命：君主制结束 → 平等兴起。"
+      }
     }
   },
   science: {
     states: {
+      definition: "States of matter include Solid, Liquid, and Gas, describing the form of substances.",
       teacher: {
-        en: "States of Matter: 1) Solid has fixed shape/volume 2) Liquid has fixed volume, shape varies 3) Gas has no fixed shape/volume 4) Heating/cooling changes states.",
-        es: "Estados de la materia: 1) Sólido forma/volumen fijo 2) Líquido volumen fijo, forma variable 3) Gas sin forma/volumen fijo 4) Calor/frío cambia estados.",
-        zh: "物质状态：1）固体固定形状/体积 2）液体体积固定，形状可变 3）气体无固定形状/体积 4）加热/冷却改变状态。",
-        fr: "États de la matière : 1) Solide forme/volume fixe 2) Liquide volume fixe, forme variable 3) Gaz pas de forme/volume fixe 4) Chaleur/froid change les états."
-      },
-      student: { en: "Student learns solid, liquid, and gas properties step by step." },
-      sampleQ: "What are the three states of matter?"
+        en: "Teacher explains States of Matter: Solid → Liquid → Gas.",
+        es: "El profesor explica los estados de la materia: sólido → líquido → gas.",
+        fr: "L'enseignant explique les états de la matière : solide → liquide → gaz.",
+        zh: "老师解释物质的状态：固体 → 液体 → 气体。"
+      }
     }
   }
 };
@@ -296,16 +307,13 @@ function updateTopics() {
   });
 }
 
-/* CONTENT */
 function updateContent() {
   const subject = document.getElementById("subject").value;
   const topic = document.getElementById("topic").value;
   const role = document.getElementById("role").value;
-  const lang = document.getElementById("language").value;
-
+  const language = document.getElementById("language").value;
   explanationBox.innerText =
-    data[subject]?.[topic]?.[role]?.[lang] || "Select a topic to begin.";
-
+    data[subject]?.[topic]?.teacher?.[language] || "Select a topic to begin.";
   document.getElementById("problem-solving").innerHTML = `
     • Understands topic step-by-step<br>
     • ${role==="teacher"?"Supports teaching guidance":"Observes learning clearly"}<br>
@@ -325,27 +333,42 @@ function speak() {
   utterance.onend = () => subtitles.style.display = "none";
   speechSynthesis.speak(utterance);
 }
+
 function stopVoice() {
   speechSynthesis.cancel();
   subtitles.style.display = "none";
 }
 
-/* STUDENT QUESTION */
+/* SMART STUDENT QUESTION ANSWERS */
 function answerQuestion() {
   const q = document.getElementById("studentQuestion").value.trim();
   if (!q) return;
 
   const subject = document.getElementById("subject").value;
   const topic = document.getElementById("topic").value;
-  const lang = document.getElementById("language").value;
+  const language = document.getElementById("language").value;
+  const topicExplanation = data[subject]?.[topic]?.teacher?.[language] || "Let's explore this topic further.";
 
-  const topicExplanation = data[subject]?.[topic]?.teacher?.[lang] || "Let's explore this topic further.";
+  const keywords = q.toLowerCase().match(/\b\w+\b/g) || [];
+  let reply = topicExplanation;
 
-  const reply = `Student asked: "${q}"\nTeacher explains step-by-step:\n${topicExplanation}`;
+  if (keywords.some(k => topicExplanation.toLowerCase().includes(k))) {
+    reply = `Good question! Regarding "${q}", here’s a more detailed explanation: ${topicExplanation}`;
+  } else if (q.length < 20) {
+    reply = `You asked: "${q}". Here's what you need to know: ${topicExplanation}`;
+  } else {
+    reply = `Thank you for your question. ${topicExplanation}`;
+  }
+
+  const paraphrases = ["In simpler terms,", "To make it clear,", "Basically,", "Let me explain it this way,"];
+  const intro = paraphrases[Math.floor(Math.random() * paraphrases.length)];
+  reply = `${intro} ${reply}`;
+
   teacherReplyBox.innerText = reply;
   speakReply();
   document.getElementById("studentQuestion").value = "";
 }
+
 function speakReply() {
   stopVoice();
   const text = teacherReplyBox.innerText;
@@ -355,6 +378,32 @@ function speakReply() {
   utterance.rate = 0.9;
   utterance.onend = () => subtitles.style.display = "none";
   speechSynthesis.speak(utterance);
+}
+
+/* VOICE INPUT MIC FOR STUDENT */
+let recognition;
+if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SpeechRecognition();
+  recognition.lang = 'en-US';
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+
+  recognition.onresult = (event) => {
+    const transcript = event.results[0][0].transcript;
+    document.getElementById("studentQuestion").value = transcript;
+    answerQuestion();
+  };
+
+  recognition.onerror = (event) => {
+    console.log("Speech recognition error:", event.error);
+  };
+} else {
+  console.log("Your browser does not support Speech Recognition");
+}
+
+function startMic() {
+  if (recognition) recognition.start();
 }
 
 /* FEEDBACK */
@@ -367,6 +416,7 @@ function submitFeedback() {
   document.getElementById("feedbackInput").value = "";
   renderFeedback();
 }
+
 function renderFeedback() {
   const list = JSON.parse(localStorage.getItem("baint_feedback")) || [];
   feedbackList.innerHTML = list.map(f => `• ${f.feedback}`).join("<br>");
