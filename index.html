@@ -18,7 +18,7 @@ body {
 /* Mac tablet look */
 .laptop {
   width: 960px;
-  height: 640px;
+  height: 680px;
   background: #000;
   border-radius: 32px;
   padding: 16px;
@@ -115,6 +115,13 @@ button {
   display: none;
   text-align: center;
 }
+
+/* Mic icon */
+.mic-btn {
+  font-size: 18px;
+  padding: 8px 12px;
+  margin-left: 6px;
+}
 </style>
 </head>
 
@@ -139,10 +146,11 @@ button {
     <div id="demo" style="display:none;">
 
       <div class="section">
-        <h4>Role & Language</h4>
-        <select id="role" onchange="updateContent()">
-          <option value="teacher">Teacher</option>
-          <option value="student">Student</option>
+        <h4>Subject & Language</h4>
+        <select id="subject" onchange="updateTopics(); updateContent();">
+          <option value="biology">Biology</option>
+          <option value="history">History</option>
+          <option value="science">General Science</option>
         </select>
 
         <select id="language" onchange="updateContent()">
@@ -154,14 +162,13 @@ button {
       </div>
 
       <div class="section">
-        <h4>Learning Context</h4>
-        <select id="subject" onchange="updateTopics(); updateContent();">
-          <option value="biology">Biology</option>
-          <option value="history">History</option>
-          <option value="science">General Science</option>
-        </select>
-
+        <h4>Topic</h4>
         <select id="topic" onchange="updateContent()"></select>
+      </div>
+
+      <div class="section">
+        <h4>Subject Intro</h4>
+        <div class="card" id="subjectIntro">Select a subject to see its introduction.</div>
       </div>
 
       <div class="section">
@@ -174,11 +181,10 @@ button {
 
       <div class="section">
         <h4>Student Question</h4>
-        <input type="text" id="studentQuestion" placeholder="Ask your question..." />
+        <input type="text" id="studentQuestion" placeholder="Ask your question..." value="What is photosynthesis?"/>
         <button onclick="answerQuestion()">Ask</button>
-        <button onclick="startMic()">🎙️</button>
+        <button class="mic-btn" onclick="speakReply()">🎙️</button>
         <div class="card" id="teacherReply">Teacher will reply here...</div>
-        <button onclick="speakReply()">▶ Listen Reply</button>
       </div>
 
       <div class="section">
@@ -247,32 +253,92 @@ function startBootSequence() {
 /* DEMO DATA */
 const data = {
   biology: {
+    intro: {
+      en: "Biology is the study of living organisms and their interactions with the environment.",
+      es: "La biología es el estudio de los organismos vivos y sus interacciones con el entorno.",
+      fr: "La biologie est l'étude des organismes vivants et de leurs interactions avec l'environnement.",
+      zh: "生物学是研究生物及其与环境的相互作用的科学。"
+    },
     photosynthesis: {
-      teacher: { en: "Teacher explains Photosynthesis step-by-step.", es:"El profesor explica la fotosíntesis paso a paso.", fr:"Le professeur explique la photosynthèse étape par étape.", zh:"老师逐步讲解光合作用。" },
-      student: { en: "Student observes Photosynthesis and learns energy conversion.", es:"El estudiante observa la fotosíntesis y aprende la conversión de energía.", fr:"L'étudiant observe la photosynthèse et apprend la conversion de l'énergie.", zh:"学生观察光合作用并学习能量转换。" }
+      teacher: {
+        en: "Photosynthesis is the process by which green plants convert sunlight into chemical energy. Step 1: Light absorption. Step 2: Water splitting. Step 3: Glucose formation.",
+        es: "La fotosíntesis es el proceso mediante el cual las plantas verdes convierten la luz solar en energía química. Paso 1: Absorción de luz. Paso 2: División del agua. Paso 3: Formación de glucosa.",
+        fr: "La photosynthèse est le processus par lequel les plantes vertes convertissent la lumière en énergie chimique. Étape 1 : Absorption de la lumière. Étape 2 : Division de l'eau. Étape 3 : Formation du glucose.",
+        zh: "光合作用是绿色植物将阳光转化为化学能的过程。步骤1：光吸收。步骤2：水分裂。步骤3：葡萄糖形成。"
+      },
+      student: {
+        en: "Student observes Photosynthesis and learns energy conversion.",
+        es: "El estudiante observa la fotosíntesis y aprende sobre la conversión de energía.",
+        fr: "L'étudiant observe la photosynthèse et apprend la conversion de l'énergie.",
+        zh: "学生观察光合作用并学习能量转换。"
+      }
     },
     watercycle: {
-      teacher: { en: "Teacher explains Water Cycle: evaporation, condensation, precipitation.", es:"El profesor explica el ciclo del agua: evaporación, condensación, precipitación.", fr:"Le professeur explique le cycle de l'eau : évaporation, condensation, précipitation.", zh:"老师讲解水循环：蒸发、凝结、降水。" },
-      student: { en: "Student observes Water Cycle and learns step-by-step.", es:"El estudiante observa el ciclo del agua y aprende paso a paso.", fr:"L'étudiant observe le cycle de l'eau et apprend étape par étape.", zh:"学生观察水循环并逐步学习。" }
+      teacher: {
+        en: "Water Cycle: evaporation, condensation, precipitation explained step-by-step.",
+        es: "Ciclo del agua: evaporación, condensación, precipitación explicado paso a paso.",
+        fr: "Cycle de l'eau : évaporation, condensation, précipitation expliqués étape par étape.",
+        zh: "水循环：蒸发、冷凝、降水逐步解释。"
+      },
+      student: {
+        en: "Student observes Water Cycle and learns step-by-step.",
+        es: "El estudiante observa el ciclo del agua y aprende paso a paso.",
+        fr: "L'étudiant observe le cycle de l'eau et apprend étape par étape.",
+        zh: "学生观察水循环并逐步学习。"
+      }
     }
   },
   history: {
+    intro: {
+      en: "History is the study of past events, particularly in human affairs.",
+      es: "La historia es el estudio de los eventos pasados, particularmente en los asuntos humanos.",
+      fr: "L'histoire est l'étude des événements passés, particulièrement dans les affaires humaines.",
+      zh: "历史是对过去事件的研究，尤其是人类事务。"
+    },
     revolution: {
-      teacher: { en: "Teacher explains French Revolution: end of monarchy, rise of equality.", es:"El profesor explica la Revolución Francesa: fin de la monarquía, ascenso de la igualdad.", fr:"Le professeur explique la Révolution française : fin de la monarchie, montée de l'égalité.", zh:"老师讲解法国大革命：君主制结束，平等兴起。" },
-      student: { en: "Student observes French Revolution and learns the changes.", es:"El estudiante observa la Revolución Francesa y aprende los cambios.", fr:"L'étudiant observe la Révolution française et apprend les changements.", zh:"学生观察法国大革命并学习变化。" }
+      teacher: {
+        en: "French Revolution: end of monarchy, rise of equality. Step 1: Causes. Step 2: Key events. Step 3: Outcomes.",
+        es: "Revolución Francesa: fin de la monarquía, auge de la igualdad. Paso 1: Causas. Paso 2: Eventos clave. Paso 3: Resultados.",
+        fr: "Révolution française : fin de la monarchie, montée de l'égalité. Étape 1 : Causes. Étape 2 : Événements clés. Étape 3 : Résultats.",
+        zh: "法国大革命：君主制结束，平等兴起。步骤1：原因。步骤2：关键事件。步骤3：结果。"
+      },
+      student: {
+        en: "Student observes French Revolution and learns changes.",
+        es: "El estudiante observa la Revolución Francesa y aprende los cambios.",
+        fr: "L'étudiant observe la Révolution française et apprend les changements.",
+        zh: "学生观察法国大革命并学习变化。"
+      }
     }
   },
   science: {
+    intro: {
+      en: "General Science introduces fundamental concepts of physics, chemistry, and biology.",
+      es: "La ciencia general introduce conceptos fundamentales de física, química y biología.",
+      fr: "Les sciences générales introduisent les concepts fondamentaux de la physique, de la chimie et de la biologie.",
+      zh: "普通科学介绍物理、化学和生物学的基本概念。"
+    },
     states: {
-      teacher: { en: "Teacher explains States of Matter: Solid, Liquid, Gas.", es:"El profesor explica los estados de la materia: sólido, líquido, gas.", fr:"Le professeur explique les états de la matière : solide, liquide, gaz.", zh:"老师讲解物质状态：固体、液体、气体。" },
-      student: { en: "Student observes States of Matter and learns step-by-step.", es:"El estudiante observa los estados de la materia y aprende paso a paso.", fr:"L'étudiant observe les états de la matière et apprend étape par étape.", zh:"学生观察物质状态并逐步学习。" }
+      teacher: {
+        en: "States of Matter: Solid, Liquid, Gas explained step-by-step.",
+        es: "Estados de la materia: Sólido, Líquido, Gas explicado paso a paso.",
+        fr: "États de la matière : Solide, Liquide, Gaz expliqué étape par étape.",
+        zh: "物质状态：固体、液体、气体逐步解释。"
+      },
+      student: {
+        en: "Student observes States of Matter and learns step-by-step.",
+        es: "El estudiante observa los estados de la materia y aprende paso a paso.",
+        fr: "L'étudiant observe les états de la matière et apprend étape par étape.",
+        zh: "学生观察物质状态并逐步学习。"
+      }
     }
   }
 };
 
+/* DOM */
 const explanationBox = document.getElementById("explanation");
 const teacherReplyBox = document.getElementById("teacherReply");
 const feedbackList = document.getElementById("feedbackList");
+const subjectIntro = document.getElementById("subjectIntro");
 
 /* TOPICS */
 function updateTopics() {
@@ -280,23 +346,30 @@ function updateTopics() {
   const topicSelect = document.getElementById("topic");
   topicSelect.innerHTML = "";
   Object.keys(data[subject]).forEach(t => {
-    let o = document.createElement("option");
-    o.value = t;
-    o.innerText = t.charAt(0).toUpperCase() + t.slice(1);
-    topicSelect.appendChild(o);
+    if (t !== "intro") {
+      let o = document.createElement("option");
+      o.value = t;
+      o.innerText = t.charAt(0).toUpperCase() + t.slice(1);
+      topicSelect.appendChild(o);
+    }
   });
 }
 
 function updateContent() {
   const subject = document.getElementById("subject").value;
   const topic = document.getElementById("topic").value;
-  const role = document.getElementById("role").value;
+  const role = "teacher"; // only teacher explanations for now
   const lang = document.getElementById("language").value;
-  explanationBox.innerText =
-    data[subject]?.[topic]?.[role]?.[lang] || "Select a topic to begin.";
+
+  // Subject intro
+  subjectIntro.innerText = data[subject]?.intro?.[lang] || "Select a subject to see its introduction.";
+
+  // Topic explanation
+  explanationBox.innerText = data[subject]?.[topic]?.teacher?.[lang] || "Select a topic to begin.";
+
   document.getElementById("problem-solving").innerHTML = `
     • Understands topic step-by-step<br>
-    • ${role==="teacher"?"Supports teaching guidance":"Observes learning clearly"}<br>
+    • Supports teaching guidance<br>
     • Reduces confusion<br>
     • Human-in-control education
   `;
@@ -307,9 +380,6 @@ let utterance = null;
 function speak() {
   stopVoice();
   utterance = new SpeechSynthesisUtterance(explanationBox.innerText);
-  utterance.lang = document.getElementById("language").value === 'zh' ? 'zh-CN' :
-                  document.getElementById("language").value === 'es' ? 'es-ES' :
-                  document.getElementById("language").value === 'fr' ? 'fr-FR' : 'en-US';
   subtitles.innerText = explanationBox.innerText;
   subtitles.style.display = "block";
   utterance.rate = 0.9;
@@ -330,71 +400,24 @@ function answerQuestion() {
   const subject = document.getElementById("subject").value;
   const topic = document.getElementById("topic").value;
   const lang = document.getElementById("language").value;
+
   const topicExplanation = data[subject]?.[topic]?.teacher?.[lang] || "Let's explore this topic further.";
 
-  const keywords = q.toLowerCase().match(/\b\w+\b/g) || [];
-  let reply = topicExplanation;
-
-  if (keywords.some(k => topicExplanation.toLowerCase().includes(k))) {
-    reply = `Good question! Regarding "${q}", here’s a more detailed explanation: ${topicExplanation}`;
-  } else if (q.length < 20) {
-    reply = `You asked: "${q}". Here's what you need to know: ${topicExplanation}`;
-  } else {
-    reply = `Thank you for your question. ${topicExplanation}`;
-  }
-
-  const paraphrases = ["In simpler terms,", "To make it clear,", "Basically,", "Let me explain it this way,"];
-  const intro = paraphrases[Math.floor(Math.random() * paraphrases.length)];
-  reply = `${intro} ${reply}`;
-
+  let reply = `Teacher explains: Step-by-step for your question "${q}": ${topicExplanation}`;
   teacherReplyBox.innerText = reply;
   speakReply();
   document.getElementById("studentQuestion").value = "";
 }
 
-/* TEACHER VOICE REPLY */
 function speakReply() {
   stopVoice();
   const text = teacherReplyBox.innerText;
   subtitles.innerText = text;
   subtitles.style.display = "block";
   utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = document.getElementById("language").value === 'zh' ? 'zh-CN' :
-                  document.getElementById("language").value === 'es' ? 'es-ES' :
-                  document.getElementById("language").value === 'fr' ? 'fr-FR' : 'en-US';
   utterance.rate = 0.9;
   utterance.onend = () => subtitles.style.display = "none";
   speechSynthesis.speak(utterance);
-}
-
-/* MULTI-LANGUAGE MICROPHONE INPUT */
-let recognition;
-function startMic() {
-  const langSelect = document.getElementById("language").value;
-  const langMap = { en: 'en-US', es: 'es-ES', fr: 'fr-FR', zh: 'zh-CN' };
-  const speechLang = langMap[langSelect] || 'en-US';
-
-  if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
-    alert("Your browser does not support speech recognition.");
-    return;
-  }
-
-  recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-  recognition.lang = speechLang;
-  recognition.interimResults = false;
-  recognition.maxAlternatives = 1;
-
-  recognition.onresult = function(event) {
-    const spokenText = event.results[0][0].transcript;
-    document.getElementById("studentQuestion").value = spokenText;
-    answerQuestion(); // auto-trigger answer
-  };
-
-  recognition.onerror = function(event) {
-    console.error("Speech recognition error", event);
-  };
-
-  recognition.start();
 }
 
 /* FEEDBACK */
@@ -438,4 +461,4 @@ updateContent();
 renderFeedback();
 </script>
 </body>
-</html>
+</html
