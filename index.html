@@ -14,11 +14,10 @@ body {
   align-items: center;
   height: 100vh;
 }
-
 /* Mac tablet look */
 .laptop {
   width: 960px;
-  height: 680px;
+  height: 640px;
   background: #000;
   border-radius: 32px;
   padding: 16px;
@@ -26,7 +25,6 @@ body {
   display: flex;
   flex-direction: column;
 }
-
 .top-bar {
   height: 36px;
   background: #1c1c1c;
@@ -38,7 +36,6 @@ body {
   font-size: 14px;
   font-weight: bold;
 }
-
 .screen-shell {
   flex: 1;
   background: #f9fafb;
@@ -47,84 +44,26 @@ body {
   padding: 22px;
   overflow-y: auto;
 }
-
 /* Sections */
 .section { margin-bottom: 20px; }
 .section h4 { margin: 0 0 8px; font-size: 15px; }
-
 /* Inputs */
-select, input {
-  padding: 8px 10px;
-  border-radius: 8px;
-  border: 1px solid #d1d5db;
-  font-size: 14px;
-  margin-right: 8px;
-}
-
+select, input { padding: 8px 10px; border-radius: 8px; border: 1px solid #d1d5db; font-size: 14px; margin-right: 8px; }
 input[type="text"], input[type="email"] { width: 60%; }
-
 /* Cards */
-.card {
-  background: #ffffff;
-  border-radius: 14px;
-  padding: 16px;
-  border: 1px solid #e5e7eb;
-  font-size: 14px;
-  line-height: 1.6;
-  min-height: 60px;
-}
-
+.card { background: #ffffff; border-radius: 14px; padding: 16px; border: 1px solid #e5e7eb; font-size: 14px; line-height: 1.6; min-height: 60px; }
 /* Buttons */
-button {
-  background: #2563eb;
-  border: none;
-  padding: 10px 18px;
-  border-radius: 10px;
-  color: #fff;
-  cursor: pointer;
-  font-size: 14px;
-  margin-top: 6px;
-}
-
+button { background: #2563eb; border: none; padding: 10px 18px; border-radius: 10px; color: #fff; cursor: pointer; font-size: 14px; margin-top: 6px; }
 /* Waitlist */
-.waitlist {
-  background: #eef2ff;
-  border: 1px dashed #6366f1;
-  border-radius: 14px;
-  padding: 16px;
-}
-
-.success {
-  color: #047857;
-  font-size: 13px;
-  margin-top: 8px;
-}
-
+.waitlist { background: #eef2ff; border: 1px dashed #6366f1; border-radius: 14px; padding: 16px; }
+/* Success text */
+.success { color: #047857; font-size: 13px; margin-top: 8px; }
 /* Subtitles for voice */
-.subtitles {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 80%;
-  background: rgba(0,0,0,0.8);
-  color: #fff;
-  padding: 12px;
-  border-radius: 12px;
-  font-size: 13px;
-  display: none;
-  text-align: center;
-}
-
-/* Mic icon */
-.mic-btn {
-  font-size: 18px;
-  padding: 8px 12px;
-  margin-left: 6px;
-}
+.subtitles { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 80%; background: rgba(0,0,0,0.8); color: #fff; padding: 12px; border-radius: 12px; font-size: 13px; display: none; text-align: center; }
+/* Mic button */
+.mic-btn { margin-left: 4px; padding: 6px 10px; background: #10b981; border-radius: 50px; font-size: 14px; cursor: pointer; }
 </style>
 </head>
-
 <body>
 <div class="laptop">
   <div class="top-bar">BAINT OS — Classroom Assistant Demo</div>
@@ -145,32 +84,33 @@ button {
     <!-- DEMO -->
     <div id="demo" style="display:none;">
 
+      <!-- Role & Language -->
       <div class="section">
-        <h4>Subject & Language</h4>
+        <h4>Role & Language</h4>
+        <select id="role" onchange="updateContent()">
+          <option value="teacher">Teacher</option>
+          <option value="student">Student</option>
+        </select>
+        <select id="language" onchange="updateContent()">
+          <option value="en">English</option>
+          <option value="es">Spanish</option>
+          <option value="fr">French</option>
+          <option value="zh">Chinese</option>
+        </select>
+      </div>
+
+      <!-- Learning Context -->
+      <div class="section">
+        <h4>Learning Context</h4>
         <select id="subject" onchange="updateTopics(); updateContent();">
           <option value="biology">Biology</option>
           <option value="history">History</option>
           <option value="science">General Science</option>
         </select>
-
-        <select id="language" onchange="updateContent()">
-          <option value="en">English</option>
-          <option value="es">Spanish</option>
-          <option value="zh">Chinese</option>
-          <option value="fr">French</option>
-        </select>
-      </div>
-
-      <div class="section">
-        <h4>Topic</h4>
         <select id="topic" onchange="updateContent()"></select>
       </div>
 
-      <div class="section">
-        <h4>Subject Intro</h4>
-        <div class="card" id="subjectIntro">Select a subject to see its introduction.</div>
-      </div>
-
+      <!-- Guided Explanation -->
       <div class="section">
         <h4>Guided Explanation (Teacher)</h4>
         <div class="card" id="explanation"></div>
@@ -179,14 +119,16 @@ button {
         <button onclick="stopVoice()">⏹ Stop</button>
       </div>
 
+      <!-- Student Question -->
       <div class="section">
         <h4>Student Question</h4>
-        <input type="text" id="studentQuestion" placeholder="Ask your question..." value="What is photosynthesis?"/>
+        <input type="text" id="studentQuestion" placeholder="Ask your question..." />
         <button onclick="answerQuestion()">Ask</button>
-        <button class="mic-btn" onclick="speakReply()">🎙️</button>
+        <span class="mic-btn" onclick="speakReply()">🎙️ Listen Reply</span>
         <div class="card" id="teacherReply">Teacher will reply here...</div>
       </div>
 
+      <!-- Feedback -->
       <div class="section">
         <h4>Feedback</h4>
         <input type="text" id="feedbackInput" placeholder="Share your feedback..." />
@@ -194,11 +136,13 @@ button {
         <div class="card" id="feedbackList">Feedback will appear here...</div>
       </div>
 
+      <!-- Problem Solving -->
       <div class="section">
         <h4>What Problem Does This Solve?</h4>
         <div class="card" id="problem-solving"></div>
       </div>
 
+      <!-- Waitlist -->
       <div class="section waitlist">
         <h4>🚀 Join the BAINT Waitlist</h4>
         <p style="font-size:13px;">Human-centric AI supporting teachers and students.</p>
@@ -208,7 +152,6 @@ button {
       </div>
 
     </div>
-
   </div>
 </div>
 
@@ -253,92 +196,73 @@ function startBootSequence() {
 /* DEMO DATA */
 const data = {
   biology: {
-    intro: {
-      en: "Biology is the study of living organisms and their interactions with the environment.",
-      es: "La biología es el estudio de los organismos vivos y sus interacciones con el entorno.",
-      fr: "La biologie est l'étude des organismes vivants et de leurs interactions avec l'environnement.",
-      zh: "生物学是研究生物及其与环境的相互作用的科学。"
-    },
     photosynthesis: {
       teacher: {
-        en: "Photosynthesis is the process by which green plants convert sunlight into chemical energy. Step 1: Light absorption. Step 2: Water splitting. Step 3: Glucose formation.",
-        es: "La fotosíntesis es el proceso mediante el cual las plantas verdes convierten la luz solar en energía química. Paso 1: Absorción de luz. Paso 2: División del agua. Paso 3: Formación de glucosa.",
-        fr: "La photosynthèse est le processus par lequel les plantes vertes convertissent la lumière en énergie chimique. Étape 1 : Absorption de la lumière. Étape 2 : Division de l'eau. Étape 3 : Formation du glucose.",
-        zh: "光合作用是绿色植物将阳光转化为化学能的过程。步骤1：光吸收。步骤2：水分裂。步骤3：葡萄糖形成。"
+        en: "Teacher explains Photosynthesis step-by-step: 1. Light absorption, 2. Water splitting, 3. Glucose production.",
+        es: "El profesor explica la fotosíntesis paso a paso...",
+        fr: "Le professeur explique la photosynthèse étape par étape...",
+        zh: "教师逐步解释光合作用：1. 光吸收，2. 水分解，3. 葡萄糖生成。"
       },
-      student: {
-        en: "Student observes Photosynthesis and learns energy conversion.",
-        es: "El estudiante observa la fotosíntesis y aprende sobre la conversión de energía.",
-        fr: "L'étudiant observe la photosynthèse et apprend la conversion de l'énergie.",
-        zh: "学生观察光合作用并学习能量转换。"
+      studentQuestion: {
+        en: "Why do plants need sunlight?",
+        es: "¿Por qué las plantas necesitan luz solar?",
+        fr: "Pourquoi les plantes ont-elles besoin de la lumière du soleil?",
+        zh: "植物为什么需要阳光？"
       }
     },
     watercycle: {
       teacher: {
-        en: "Water Cycle: evaporation, condensation, precipitation explained step-by-step.",
-        es: "Ciclo del agua: evaporación, condensación, precipitación explicado paso a paso.",
-        fr: "Cycle de l'eau : évaporation, condensation, précipitation expliqués étape par étape.",
-        zh: "水循环：蒸发、冷凝、降水逐步解释。"
+        en: "Teacher explains Water Cycle: evaporation, condensation, precipitation.",
+        es: "El profesor explica el ciclo del agua...",
+        fr: "Le professeur explique le cycle de l'eau...",
+        zh: "教师解释水循环：蒸发、冷凝、降水。"
       },
-      student: {
-        en: "Student observes Water Cycle and learns step-by-step.",
-        es: "El estudiante observa el ciclo del agua y aprende paso a paso.",
-        fr: "L'étudiant observe le cycle de l'eau et apprend étape par étape.",
-        zh: "学生观察水循环并逐步学习。"
+      studentQuestion: {
+        en: "How does rain form?",
+        es: "¿Cómo se forma la lluvia?",
+        fr: "Comment se forme la pluie?",
+        zh: "雨是如何形成的？"
       }
     }
   },
   history: {
-    intro: {
-      en: "History is the study of past events, particularly in human affairs.",
-      es: "La historia es el estudio de los eventos pasados, particularmente en los asuntos humanos.",
-      fr: "L'histoire est l'étude des événements passés, particulièrement dans les affaires humaines.",
-      zh: "历史是对过去事件的研究，尤其是人类事务。"
-    },
     revolution: {
       teacher: {
-        en: "French Revolution: end of monarchy, rise of equality. Step 1: Causes. Step 2: Key events. Step 3: Outcomes.",
-        es: "Revolución Francesa: fin de la monarquía, auge de la igualdad. Paso 1: Causas. Paso 2: Eventos clave. Paso 3: Resultados.",
-        fr: "Révolution française : fin de la monarchie, montée de l'égalité. Étape 1 : Causes. Étape 2 : Événements clés. Étape 3 : Résultats.",
-        zh: "法国大革命：君主制结束，平等兴起。步骤1：原因。步骤2：关键事件。步骤3：结果。"
+        en: "Teacher explains French Revolution: end of monarchy, rise of equality.",
+        es: "El profesor explica la Revolución Francesa...",
+        fr: "Le professeur explique la Révolution française...",
+        zh: "教师讲解法国大革命：结束君主制，平等兴起。"
       },
-      student: {
-        en: "Student observes French Revolution and learns changes.",
-        es: "El estudiante observa la Revolución Francesa y aprende los cambios.",
-        fr: "L'étudiant observe la Révolution française et apprend les changements.",
-        zh: "学生观察法国大革命并学习变化。"
+      studentQuestion: {
+        en: "What caused the French Revolution?",
+        es: "¿Qué causó la Revolución Francesa?",
+        fr: "Qu'est-ce qui a causé la Révolution française?",
+        zh: "法国大革命的原因是什么？"
       }
     }
   },
   science: {
-    intro: {
-      en: "General Science introduces fundamental concepts of physics, chemistry, and biology.",
-      es: "La ciencia general introduce conceptos fundamentales de física, química y biología.",
-      fr: "Les sciences générales introduisent les concepts fondamentaux de la physique, de la chimie et de la biologie.",
-      zh: "普通科学介绍物理、化学和生物学的基本概念。"
-    },
     states: {
       teacher: {
-        en: "States of Matter: Solid, Liquid, Gas explained step-by-step.",
-        es: "Estados de la materia: Sólido, Líquido, Gas explicado paso a paso.",
-        fr: "États de la matière : Solide, Liquide, Gaz expliqué étape par étape.",
-        zh: "物质状态：固体、液体、气体逐步解释。"
+        en: "Teacher explains States of Matter: Solid, Liquid, Gas.",
+        es: "El profesor explica los estados de la materia...",
+        fr: "Le professeur explique les états de la matière...",
+        zh: "教师解释物质的三态：固体、液体、气体。"
       },
-      student: {
-        en: "Student observes States of Matter and learns step-by-step.",
-        es: "El estudiante observa los estados de la materia y aprende paso a paso.",
-        fr: "L'étudiant observe les états de la matière et apprend étape par étape.",
-        zh: "学生观察物质状态并逐步学习。"
+      studentQuestion: {
+        en: "What are the three states of matter?",
+        es: "¿Cuáles son los tres estados de la materia?",
+        fr: "Quels sont les trois états de la matière?",
+        zh: "物质的三种状态是什么？"
       }
     }
   }
 };
 
-/* DOM */
+/* DOM Elements */
 const explanationBox = document.getElementById("explanation");
 const teacherReplyBox = document.getElementById("teacherReply");
 const feedbackList = document.getElementById("feedbackList");
-const subjectIntro = document.getElementById("subjectIntro");
 
 /* TOPICS */
 function updateTopics() {
@@ -346,30 +270,30 @@ function updateTopics() {
   const topicSelect = document.getElementById("topic");
   topicSelect.innerHTML = "";
   Object.keys(data[subject]).forEach(t => {
-    if (t !== "intro") {
-      let o = document.createElement("option");
-      o.value = t;
-      o.innerText = t.charAt(0).toUpperCase() + t.slice(1);
-      topicSelect.appendChild(o);
-    }
+    let o = document.createElement("option");
+    o.value = t;
+    o.innerText = t.charAt(0).toUpperCase() + t.slice(1);
+    topicSelect.appendChild(o);
   });
 }
 
+/* CONTENT & SAMPLE QUESTION */
 function updateContent() {
   const subject = document.getElementById("subject").value;
   const topic = document.getElementById("topic").value;
-  const role = "teacher"; // only teacher explanations for now
+  const role = document.getElementById("role").value;
   const lang = document.getElementById("language").value;
 
-  // Subject intro
-  subjectIntro.innerText = data[subject]?.intro?.[lang] || "Select a subject to see its introduction.";
+  explanationBox.innerText =
+    data[subject]?.[topic]?.teacher?.[lang] || "Select a topic to begin.";
 
-  // Topic explanation
-  explanationBox.innerText = data[subject]?.[topic]?.teacher?.[lang] || "Select a topic to begin.";
-
+  // Sample student question
+  const sampleQ = data[subject]?.[topic]?.studentQuestion?.[lang] || "";
+  teacherReplyBox.innerText = `Sample Question: "${sampleQ}"\nTeacher Answer: ${data[subject]?.[topic]?.teacher?.[lang]}`;
+  
   document.getElementById("problem-solving").innerHTML = `
     • Understands topic step-by-step<br>
-    • Supports teaching guidance<br>
+    • ${role==="teacher"?"Supports teaching guidance":"Observes learning clearly"}<br>
     • Reduces confusion<br>
     • Human-in-control education
   `;
@@ -386,7 +310,6 @@ function speak() {
   utterance.onend = () => subtitles.style.display = "none";
   speechSynthesis.speak(utterance);
 }
-
 function stopVoice() {
   speechSynthesis.cancel();
   subtitles.style.display = "none";
@@ -403,12 +326,27 @@ function answerQuestion() {
 
   const topicExplanation = data[subject]?.[topic]?.teacher?.[lang] || "Let's explore this topic further.";
 
-  let reply = `Teacher explains: Step-by-step for your question "${q}": ${topicExplanation}`;
+  const keywords = q.toLowerCase().match(/\b\w+\b/g) || [];
+  let reply = topicExplanation;
+
+  if (keywords.some(k => topicExplanation.toLowerCase().includes(k))) {
+    reply = `Good question! Regarding "${q}", here’s a more detailed explanation: ${topicExplanation}`;
+  } else if (q.length < 20) {
+    reply = `You asked: "${q}". Here's what you need to know: ${topicExplanation}`;
+  } else {
+    reply = `Thank you for your question. ${topicExplanation}`;
+  }
+
+  const paraphrases = ["In simpler terms,", "To make it clear,", "Basically,", "Let me explain it this way,"];
+  const intro = paraphrases[Math.floor(Math.random() * paraphrases.length)];
+  reply = `${intro} ${reply}`;
+
   teacherReplyBox.innerText = reply;
   speakReply();
   document.getElementById("studentQuestion").value = "";
 }
 
+/* TEACHER VOICE REPLY */
 function speakReply() {
   stopVoice();
   const text = teacherReplyBox.innerText;
@@ -430,7 +368,6 @@ function submitFeedback() {
   document.getElementById("feedbackInput").value = "";
   renderFeedback();
 }
-
 function renderFeedback() {
   const list = JSON.parse(localStorage.getItem("baint_feedback")) || [];
   feedbackList.innerHTML = list.map(f => `• ${f.feedback}`).join("<br>");
@@ -461,4 +398,4 @@ updateContent();
 renderFeedback();
 </script>
 </body>
-</html
+</html>
