@@ -98,12 +98,12 @@ button.mic { background: #10b981; margin-left: 8px; }
   <div class="screen-shell">
 
     <!-- APP LAUNCHER -->
-<div id="app-launcher" class="section">
-  <img src="logo.png" alt="Baint OS Logo" style="width:120px;height:120px;margin-bottom:12px;">
-  <h3 style="cursor:pointer;" onclick="launchDemo()">Click to Launch BAINT Classroom Demo</h3>
-  <p>Scan QR code for instant access:</p>
-  <img src="qr_code.png" alt="BAINT Demo QR" style="width:150px;">
-</div>
+    <div id="app-launcher" class="section">
+      <img src="logo.png" alt="Baint OS Logo" style="width:120px;height:120px;margin-bottom:12px;">
+      <h3 style="cursor:pointer;" onclick="launchDemo()">Click to Launch BAINT Classroom Demo</h3>
+      <p>Scan QR code for instant access:</p>
+      <img src="qr_code.png" alt="BAINT Demo QR" style="width:150px;">
+    </div>
 
     <!-- BOOT SCREEN -->
     <div class="section" id="boot" style="display:none;">
@@ -151,22 +151,14 @@ button.mic { background: #10b981; margin-left: 8px; }
         <button onclick="stopVoice()">⏹ Stop</button>
       </div>
 
-      <!-- STUDENT QUESTION -->
+      <!-- STUDENT QUESTION & MEMORY SEARCH -->
       <div class="section">
         <h4>Student Question</h4>
-        <input type="text" id="studentQuestion" placeholder="Ask your question..." />
+        <input type="text" id="studentQuestion" placeholder="Ask about current, past, or related topics..." />
         <button class="mic" onclick="askWithMic()">🎙️</button>
         <button onclick="answerQuestion()">Ask</button>
         <div class="card" id="teacherReply">Teacher will reply here...</div>
         <button onclick="speakReply()">▶ Listen Reply</button>
-      </div>
-
-      <!-- EXPLORE MODE -->
-      <div class="section">
-        <h4>Explore Mode (Self-Learner)</h4>
-        <input type="text" id="exploreTopic" placeholder="Ask about previous lesson or related topic" />
-        <button onclick="exploreTopic()">Explore</button>
-        <div class="card" id="exploreAnswer">BAINT will reply here...</div>
       </div>
 
       <!-- FEEDBACK -->
@@ -236,16 +228,40 @@ function startBootSequence() {
 }
 
 /* DEMO DATA */
-const data = { /* ... keep your original data ... */ };
+const data = {
+  biology: {
+    definition: {
+      en: "Biology is the study of living organisms, step-by-step from cells to systems.",
+      es: "La biología es el estudio de los organismos vivos, paso a paso desde las células hasta los sistemas.",
+      zh: "生物学是研究生物体的学科，逐步从细胞到系统。",
+      fr: "La biologie est l'étude des organismes vivants, étape par étape des cellules aux systèmes."
+    },
+    photosynthesis: {
+      teacher: {en:"Teacher explains Photosynthesis: Plants convert sunlight into chemical energy step-by-step."},
+      student: {en:"Student observes Photosynthesis step-by-step."}
+    },
+    watercycle: {
+      teacher: {en:"Teacher explains Water Cycle: Evaporation, Condensation, Precipitation step-by-step."},
+      student: {en:"Student observes Water Cycle step-by-step."}
+    }
+  },
+  history: {
+    definition: {en:"History is the study of past events, helping students understand development step-by-step."},
+    revolution: {teacher:{en:"Teacher explains French Revolution step-by-step."}, student:{en:"Student observes French Revolution step-by-step."}}
+  },
+  science: {
+    definition: {en:"Science is the systematic study of the natural world through observation and experiments."},
+    states: {teacher:{en:"Teacher explains States of Matter: Solid, Liquid, Gas step-by-step."}, student:{en:"Student observes States of Matter step-by-step."}}
+  }
+};
 
-/* SESSION MEMORY FOR LESSON */
-let lessonMemory = []; // stores student interactions & key points
+/* SESSION MEMORY */
+let lessonMemory = [];
 let currentLessonTitle = "";
 
 /* DOM ELEMENTS */
 const explanationBox = document.getElementById("explanation");
 const teacherReplyBox = document.getElementById("teacherReply");
-const exploreAnswerBox = document.getElementById("exploreAnswer");
 const feedbackList = document.getElementById("feedbackList");
 const subtitles = document.getElementById("subtitles");
 
@@ -271,13 +287,19 @@ function startClass(){
 
 /* CONTENT */
 function updateContent(){
-  const subject=document.getElementById("subject").value;
-  const topic=document.getElementById("topic").value;
-  const role=document.getElementById("role").value;
-  const lang=document.getElementById("language").value;
-  const def = data[subject].definition[lang];
-  explanationBox.innerText=`Lesson: ${currentLessonTitle}\n${def}\n\nTopic Explanation:\n${data[subject][topic][role][lang]}`;
-  document.getElementById("problem-solving").innerHTML=`• Understands topic step-by-step<br>• ${role==="teacher"?"Supports teaching guidance":"Observes learning clearly"}<br>• Reduces confusion<br>• Human-in-control education`;
+  const subject = document.getElementById("subject").value;
+  const topic = document.getElementById("topic").value;
+  const role = document.getElementById("role").value;
+  const def = data[subject].definition.en;
+  const explanation = data[subject][topic][role].en || "No explanation available.";
+  explanationBox.innerText=`Lesson: ${currentLessonTitle}\n${def}\n\nTopic Explanation:\n${explanation}`;
+
+  document.getElementById("problem-solving").innerHTML=
+    `• Understands topic step-by-step<br>
+     • Supports student learning and self-study<br>
+     • Allows revisiting past lessons<br>
+     • Reduces confusion<br>
+     • Human-in-control education`;
 }
 
 /* VOICE */
@@ -300,9 +322,7 @@ function answerQuestion(){
   if(!q) return;
   const subject=document.getElementById("subject").value;
   const topic=document.getElementById("topic").value;
-  const role="teacher";
-  const lang=document.getElementById("language").value;
-  const reply=`Student asked: "${q}"\nStep-by-step answer:\n${data[subject][topic][role][lang]}`;
+  const reply=`Student asked: "${q}"\nStep-by-step answer:\n${data[subject][topic].teacher.en}`;
   teacherReplyBox.innerText=reply;
   lessonMemory.push({question:q, answer:reply});
   speakReply();
@@ -318,19 +338,6 @@ function speakReply(){
   utterance.onend=()=>subtitles.style.display="none";
 }
 
-/* EXPLORE MODE */
-function exploreTopic(){
-  const input=document.getElementById("exploreTopic").value.trim();
-  if(!input) return;
-  // Simple search through lessonMemory
-  let found = lessonMemory.filter(item => item.question.toLowerCase().includes(input.toLowerCase()) || item.answer.toLowerCase().includes(input.toLowerCase()));
-  if(found.length > 0){
-    exploreAnswerBox.innerText = `From your lesson: ${found.map(f=>f.answer).join("\n\n")}`;
-  } else {
-    exploreAnswerBox.innerText = `No direct match found. AI suggests exploration on: "${input}" (still structured and conversational).`;
-  }
-}
-
 /* MIC INPUT */
 function askWithMic(){
   if(!navigator.mediaDevices || !window.SpeechRecognition && !window.webkitSpeechRecognition){
@@ -338,7 +345,7 @@ function askWithMic(){
     return;
   }
   const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-  recognition.lang=document.getElementById("language").value;
+  recognition.lang="en-US";
   recognition.start();
   recognition.onresult = (event)=>{
     const spoken = event.results[0][0].transcript;
