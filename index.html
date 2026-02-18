@@ -5,20 +5,20 @@
 <title>BAINT OS – Classroom Assistant Demo</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-body {margin:0; background:#f3f3f3; font-family:Arial,sans-serif; display:flex; justify-content:center; align-items:center; height:100vh;}
-.laptop {width:960px; height:700px; background:#000; border-radius:28px; padding:16px; box-shadow:0 20px 60px rgba(0,0,0,0.5); display:flex; flex-direction:column;}
-.top-bar {height:36px; background:#1c1c1c; border-radius:18px 18px 0 0; color:#fff; display:flex; align-items:center; padding:0 16px; font-size:14px; font-weight:bold;}
-.screen-shell {flex:1; background:#f9fafb; border-radius:0 0 28px 28px; margin-top:6px; padding:22px; overflow-y:auto; position:relative;}
-.section {margin-bottom:20px;}
-.section h4 {margin:0 0 8px; font-size:15px;}
-select, input {padding:8px 10px; border-radius:8px; border:1px solid #d1d5db; font-size:14px; margin-right:8px;}
-input[type="text"], input[type="email"] {width:60%;}
-.card {background:#ffffff; border-radius:14px; padding:16px; border:1px solid #e5e7eb; font-size:14px; line-height:1.6; min-height:60px;}
-button {background:#2563eb; border:none; padding:10px 18px; border-radius:10px; color:#fff; cursor:pointer; font-size:14px; margin-top:6px;}
-button.mic {background:#10b981; margin-left:8px;}
-.waitlist {background:#eef2ff; border:1px dashed #6366f1; border-radius:14px; padding:16px;}
-.success {color:#047857; font-size:13px; margin-top:8px;}
-.subtitles {position:fixed; bottom:20px; left:50%; transform:translateX(-50%); width:80%; background:rgba(0,0,0,0.8); color:#fff; padding:12px; border-radius:12px; font-size:13px; display:none; text-align:center;}
+body { margin:0; background:#f3f3f3; font-family:Arial,sans-serif; display:flex; justify-content:center; align-items:center; height:100vh; }
+.laptop { width:960px; height:720px; background:#000; border-radius:28px; padding:16px; box-shadow:0 20px 60px rgba(0,0,0,0.5); display:flex; flex-direction:column; }
+.top-bar { height:36px; background:#1c1c1c; border-radius:18px 18px 0 0; color:#fff; display:flex; align-items:center; padding:0 16px; font-size:14px; font-weight:bold; }
+.screen-shell { flex:1; background:#f9fafb; border-radius:0 0 28px 28px; margin-top:6px; padding:22px; overflow-y:auto; position:relative; }
+.section { margin-bottom:20px; }
+.section h4 { margin:0 0 8px; font-size:15px; }
+select, input { padding:8px 10px; border-radius:8px; border:1px solid #d1d5db; font-size:14px; margin-right:8px; }
+input[type="text"], input[type="email"] { width:60%; }
+.card { background:#fff; border-radius:14px; padding:16px; border:1px solid #e5e7eb; font-size:14px; line-height:1.6; min-height:60px; }
+button { background:#2563eb; border:none; padding:10px 18px; border-radius:10px; color:#fff; cursor:pointer; font-size:14px; margin-top:6px; }
+button.mic { background:#10b981; margin-left:8px; }
+.waitlist { background:#eef2ff; border:1px dashed #6366f1; border-radius:14px; padding:16px; }
+.success { color:#047857; font-size:13px; margin-top:8px; }
+.subtitles { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); width:80%; background:rgba(0,0,0,0.8); color:#fff; padding:12px; border-radius:12px; font-size:13px; display:none; text-align:center; }
 </style>
 </head>
 <body>
@@ -32,7 +32,7 @@ button.mic {background:#10b981; margin-left:8px;}
       <img src="logo.png" alt="Baint OS Logo" style="width:120px;height:120px;margin-bottom:12px;">
       <h3 style="cursor:pointer;" onclick="launchDemo()">Click to Launch BAINT Classroom Demo</h3>
       <p>Scan QR code for instant access:</p>
-      <img src="qr_code.png" alt="BAINT Demo QR" style="width:150px;">
+      <div id="qrcode" style="margin-top:12px;"></div>
     </div>
 
     <!-- BOOT SCREEN -->
@@ -68,9 +68,9 @@ button.mic {background:#10b981; margin-left:8px;}
           <option value="science">General Science</option>
           <option value="history">History</option>
           <option value="physics">Physics</option>
-          <option value="fmaths">Further Maths</option>
+          <option value="maths">Further Maths</option>
         </select>
-        <select id="topic" onchange="updateContent()"></select>
+        <select id="topic"></select>
         <input type="text" id="lessonTitle" placeholder="Lesson Title" oninput="updateContent()">
         <button onclick="startClass()">Start Lesson</button>
       </div>
@@ -118,70 +118,78 @@ button.mic {background:#10b981; margin-left:8px;}
       </div>
 
     </div>
+
   </div>
 </div>
 
 <div class="subtitles" id="subtitles"></div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
-/* APP LAUNCH → BOOT → DEMO */
-const appLauncher=document.getElementById("app-launcher");
-const bootScreen=document.getElementById("boot");
-const demoScreen=document.getElementById("demo");
-const bootLog=document.getElementById("boot-log");
+/* QR CODE */
+new QRCode(document.getElementById("qrcode"), { text:"https://baint-aio-ps-classroom-demo.vercel.app", width:150, height:150 });
 
-function launchDemo(){
-  appLauncher.style.display="none";
-  bootScreen.style.display="block";
+/* APP LAUNCH → BOOT → DEMO */
+const appLauncher = document.getElementById("app-launcher");
+const bootScreen = document.getElementById("boot");
+const demoScreen = document.getElementById("demo");
+const bootLog = document.getElementById("boot-log");
+
+function launchDemo() {
+  appLauncher.style.display = "none";
+  bootScreen.style.display = "block";
   startBootSequence();
 }
 
-const bootLines=["Initializing BAINT OS...","Loading Human-Centric AI modules...","Activating Classroom Assistant...","System ready!"];
-let bootIndex=0;
-function startBootSequence(){
-  if(bootIndex<bootLines.length){
-    bootLog.innerHTML+=bootLines[bootIndex]+"<br>";
+const bootLines = [
+  "Initializing BAINT OS...",
+  "Loading Human-Centric AI modules...",
+  "Activating Classroom Assistant...",
+  "System ready!"
+];
+
+let bootIndex = 0;
+function startBootSequence() {
+  if (bootIndex < bootLines.length) {
+    bootLog.innerHTML += bootLines[bootIndex] + "<br>";
     bootIndex++;
-    setTimeout(startBootSequence,600);
+    setTimeout(startBootSequence, 600);
   } else {
-    setTimeout(()=>{
-      bootScreen.style.display="none";
-      demoScreen.style.display="block";
-      updateTopics();
-      updateContent();
-    },800);
+    setTimeout(()=>{ bootScreen.style.display="none"; demoScreen.style.display="block"; updateTopics(); updateContent(); }, 800);
   }
 }
 
-/* DATA */
+/* DEMO DATA */
 const data = {
-  biology:{
-    definition:{en:"Biology is the study of living organisms, their structure, function, growth, origin, evolution, and distribution."},
-    photosynthesis:{teacher:{en:"Plants convert sunlight into energy. Step-by-step example provided."}, student:{en:"Observe photosynthesis step-by-step."}},
-    watercycle:{teacher:{en:"Water cycle: evaporation, condensation, precipitation. Step-by-step explained."}, student:{en:"Observe water cycle step-by-step."}}
+  biology: {
+    definition:{en:"Study of living organisms, structure, growth, and life processes."},
+    photosynthesis:{teacher:{en:"Teacher explains Photosynthesis: Plants convert sunlight into energy."}, student:{en:"Student observes Photosynthesis."}},
+    watercycle:{teacher:{en:"Teacher explains Water Cycle: Evaporation, Condensation, Precipitation."}, student:{en:"Student observes Water Cycle."}}
   },
-  science:{
-    definition:{en:"Science is the systematic study of the natural and physical world."},
-    states:{teacher:{en:"States of matter: solid, liquid, gas. Step-by-step example."}, student:{en:"Observe states of matter step-by-step."}}
+  science: {
+    definition:{en:"Systematic study of natural and physical world."},
+    states:{teacher:{en:"Teacher explains States of Matter: Solid, Liquid, Gas."}, student:{en:"Student observes States of Matter."}}
   },
-  history:{
-    definition:{en:"History is the study of past events and civilizations."},
-    revolution:{teacher:{en:"French Revolution: end of monarchy, rise of equality. Step-by-step explained."}, student:{en:"Observe French Revolution step-by-step."}}
+  history: {
+    definition:{en:"Study of past events, societies, and civilizations."},
+    revolution:{teacher:{en:"Teacher explains French Revolution: End of monarchy, rise of equality."}, student:{en:"Student observes French Revolution."}}
   },
-  physics:{
-    definition:{en:"Physics is the study of matter, energy, and forces."},
-    mechanics:{teacher:{en:"Mechanics: motion, force, energy. Step-by-step examples."}, student:{en:"Observe mechanics step-by-step."}},
-    electricity:{teacher:{en:"Electricity: voltage, current, fields. Step-by-step examples."}, student:{en:"Observe electricity step-by-step."}}
+  physics: {
+    definition:{en:"Study of matter, energy, and forces in the universe."},
+    newton:{teacher:{en:"Teacher explains Newton's Laws of Motion with examples."}, student:{en:"Student observes Newton's Laws."}},
+    energy:{teacher:{en:"Teacher explains Energy forms: Kinetic, Potential, Thermal."}, student:{en:"Student observes Energy forms."}},
+    electricity:{teacher:{en:"Teacher explains Electricity & Circuits step-by-step."}, student:{en:"Student observes Electricity & Circuits."}}
   },
-  fmaths:{
-    definition:{en:"Further Maths covers advanced concepts: calculus, algebra, probability."},
-    calculus:{teacher:{en:"Calculus: derivatives and integrals. Step-by-step problems."}, student:{en:"Observe calculus step-by-step."}},
-    algebra:{teacher:{en:"Algebra: equations and functions. Step-by-step examples."}, student:{en:"Observe algebra step-by-step."}}
+  maths: {
+    definition:{en:"Advanced mathematical concepts for problem-solving."},
+    calculus:{teacher:{en:"Teacher explains Calculus: Differentiation and Integration."}, student:{en:"Student observes Calculus examples."}},
+    matrices:{teacher:{en:"Teacher explains Matrices operations with examples."}, student:{en:"Student observes Matrices examples."}},
+    complex:{teacher:{en:"Teacher explains Complex Numbers: Arithmetic operations."}, student:{en:"Student observes Complex Numbers."}}
   }
 };
 
 /* SESSION MEMORY */
-let lessonMemory=[]; 
+let lessonMemory=[];
 let currentLessonTitle="";
 
 /* DOM ELEMENTS */
@@ -197,7 +205,8 @@ function updateTopics(){
   topicSelect.innerHTML="";
   Object.keys(data[subject]).filter(t=>t!=="definition").forEach(t=>{
     let o=document.createElement("option");
-    o.value=t; o.innerText=t.charAt(0).toUpperCase()+t.slice(1);
+    o.value=t;
+    o.innerText=t.charAt(0).toUpperCase()+t.slice(1);
     topicSelect.appendChild(o);
   });
 }
@@ -209,81 +218,37 @@ function startClass(){
   updateContent();
 }
 
-/* UPDATE CONTENT */
+/* CONTENT */
 function updateContent(){
   const subject=document.getElementById("subject").value;
   const topic=document.getElementById("topic").value;
   const role=document.getElementById("role").value;
-  const lang=document.getElementById("language").value;
-  const def=data[subject].definition[lang] || data[subject].definition.en;
-  const topicData=data[subject][topic][role][lang] || data[subject][topic][role].en;
-  explanationBox.innerText=`Lesson: ${currentLessonTitle}\n${def}\n\nTopic Explanation:\n${topicData}`;
+  const def=data[subject].definition.en;
+  explanationBox.innerText=`Lesson: ${currentLessonTitle}\n${def}\n\nTopic Explanation:\n${data[subject][topic][role].en}`;
   document.getElementById("problem-solving").innerHTML=`• Understands topic step-by-step<br>• ${role==="teacher"?"Supports teaching guidance":"Observes learning clearly"}<br>• Reduces confusion<br>• Human-in-control education`;
 }
 
 /* VOICE */
 let utterance=null;
-function speak(){stopVoice(); const text=explanationBox.innerText; subtitles.innerText=text; subtitles.style.display="block"; utterance=new SpeechSynthesisUtterance(text); utterance.rate=0.9; utterance.onend=()=>subtitles.style.display="none"; speechSynthesis.speak(utterance);}
-function stopVoice(){speechSynthesis.cancel(); subtitles.style.display="none";}
+function speak(){ stopVoice(); const text=explanationBox.innerText; subtitles.innerText=text; subtitles.style.display="block"; utterance=new SpeechSynthesisUtterance(text); utterance.rate=0.9; utterance.onend=()=>subtitles.style.display="none"; speechSynthesis.speak(utterance);}
+function stopVoice(){ speechSynthesis.cancel(); subtitles.style.display="none"; }
 
 /* STUDENT QUESTION */
-function answerQuestion(){
-  const q=document.getElementById("studentQuestion").value.trim();
-  if(!q) return;
-  const subject=document.getElementById("subject").value;
-  const topic=document.getElementById("topic").value;
-  const role="teacher";
-  const lang=document.getElementById("language").value;
+function answerQuestion(){ const q=document.getElementById("studentQuestion").value.trim(); if(!q) return; const subject=document.getElementById("subject").value; const topic=document.getElementById("topic").value; const reply=`Student asked: "${q}"\nStep-by-step answer:\n${data[subject][topic].teacher.en}`; teacherReplyBox.innerText=reply; lessonMemory.push({question:q, answer:reply}); speakReply(); document.getElementById("studentQuestion").value="";}
+function speakReply(){ stopVoice(); const text=teacherReplyBox.innerText; subtitles.innerText=text; subtitles.style.display="block"; utterance=new SpeechSynthesisUtterance(text); utterance.rate=0.9; utterance.onend=()=>subtitles.style.display="none"; speechSynthesis.speak(utterance); }
 
-  // Search lesson memory first
-  let found=lessonMemory.filter(item=>item.question.toLowerCase().includes(q.toLowerCase())||item.answer.toLowerCase().includes(q.toLowerCase()));
-  let reply="";
-  if(found.length>0){
-    reply="From your lesson memory:\n"+found.map(f=>f.answer).join("\n\n");
-  } else {
-    reply=`Step-by-step answer from current topic:\n${data[subject][topic][role][lang] || data[subject][topic][role].en}`;
-  }
-  teacherReplyBox.innerText=`Student asked: "${q}"\n${reply}`;
-  lessonMemory.push({question:q, answer:reply});
-  speakReply();
-  document.getElementById("studentQuestion").value="";
-}
-function speakReply(){stopVoice(); const text=teacherReplyBox.innerText; subtitles.innerText=text; subtitles.style.display="block"; utterance=new SpeechSynthesisUtterance(text); utterance.rate=0.9; utterance.onend=()=>subtitles.style.display="none"; speechSynthesis.speak(utterance);}
+/* MIC INPUT */
+function askWithMic(){ if(!navigator.mediaDevices || !window.SpeechRecognition && !window.webkitSpeechRecognition){ alert("Speech Recognition not supported."); return; } const recognition=new (window.SpeechRecognition || window.webkitSpeechRecognition)(); recognition.lang="en-US"; recognition.start(); recognition.onresult=(event)=>{ const spoken=event.results[0][0].transcript; document.getElementById("studentQuestion").value=spoken; answerQuestion(); };}
 
 /* FEEDBACK */
-function submitFeedback(){
-  const feedback=document.getElementById("feedbackInput").value.trim();
-  if(!feedback) return;
-  const item=document.createElement("div"); item.innerText=feedback;
-  feedbackList.appendChild(item);
-  document.getElementById("feedbackInput").value="";
-}
+function submitFeedback(){ const feedback=document.getElementById("feedbackInput").value.trim(); if(!feedback) return; let list=JSON.parse(localStorage.getItem("baint_feedback"))||[]; list.push({feedback,date:new Date().toISOString()}); localStorage.setItem("baint_feedback",JSON.stringify(list)); document.getElementById("feedbackInput").value=""; renderFeedback();}
+function renderFeedback(){ const list=JSON.parse(localStorage.getItem("baint_feedback"))||[]; feedbackList.innerHTML=list.map(f=>`• ${f.feedback}`).join("<br>");}
 
 /* WAITLIST */
-function joinWaitlist(){
-  const email=document.getElementById("waitlistEmail").value.trim();
-  if(!email) return;
-  document.getElementById("waitlistMessage").innerText=`${email} added to waitlist!`;
-  document.getElementById("waitlistEmail").value="";
-}
+function joinWaitlist(){ const email=document.getElementById("waitlistEmail").value.trim(); const msg=document.getElementById("waitlistMessage"); if(!email || !email.includes("@")){ msg.style.color="red"; msg.innerText="Please enter a valid email."; return; } let list=JSON.parse(localStorage.getItem("baint_waitlist"))||[]; list.push({email,date:new Date().toISOString()}); localStorage.setItem("baint_waitlist",JSON.stringify(list)); window.location.href=`mailto:baintcomputer@gmail.com?subject=BAINT Waitlist Signup&body=New signup: ${email}`; msg.style.color="#047857"; msg.innerText="You're on the waitlist. Thanks!";}
 
-/* MICROPHONE INPUT */
-function askWithMic(){
-  if(!navigator.mediaDevices || (!window.SpeechRecognition && !window.webkitSpeechRecognition)){
-    alert("Speech Recognition not supported.");
-    return;
-  }
-  const recognition=new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-  recognition.lang="en-US";
-  recognition.start();
-  recognition.onresult=function(event){
-    const transcript=event.results[0][0].transcript;
-    document.getElementById("studentQuestion").value=transcript;
-    answerQuestion();
-  };
-  recognition.onerror=function(){alert("Speech recognition failed.");};
-}
+/* INIT */
+updateTopics(); updateContent(); renderFeedback();
 </script>
-
 </body>
 </html>
